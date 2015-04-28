@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.support.v7.app.ActionBarActivity;
@@ -11,6 +12,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 
@@ -20,22 +23,23 @@ public class homePage extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
-    }
 
-    public void bCreateOnClick(View v) {
-        ShapeDrawable mDrawable = new ShapeDrawable(new OvalShape());
-        mDrawable.getPaint().setColor(Color.RED);
-        mDrawable.setBounds(50, 50, 50, 50);
+        final ImageView appImageView = (ImageView) findViewById(R.id.ivPieces);
 
-        //BitmapFactory bfPiece =  BitmapFactory.decodeResource(getResources(), R.drawable.pieceblack);
-        Canvas canvas = new Canvas();
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.pieceblack);
 
-        //canvas.drawBitmap(bitmap, matrix, 20);
-        canvas.drawBitmap(bitmap, (bitmap.getWidth() / 2), (bitmap.getHeight() / 2), null);
-    }
+        Button btnCreate = (Button) findViewById(R.id.bNewGame);
+        btnCreate.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
 
-    public void bClearOnClick(View v) {
+                final EditText etBlack = (EditText) findViewById(R.id.etBlackName);
+                etBlack.setText("Shit kinda worked!");
+
+                Drawable drawable = getResources().getDrawable(R.drawable.pieceblack);
+                appImageView.setImageDrawable(drawable); // set the image to the ImageView
+            }
+        });
+
 
     }
 
