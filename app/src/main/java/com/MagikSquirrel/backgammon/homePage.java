@@ -1,5 +1,6 @@
 package com.MagikSquirrel.backgammon;
 
+import android.app.ActionBar;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 
 public class homePage extends ActionBarActivity {
@@ -22,10 +24,12 @@ public class homePage extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home_page);
+       setContentView(R.layout.activity_home_page);
 
-        final ImageView appImageView = (ImageView) findViewById(R.id.ivPieces);
-
+        final LinearLayout llPiece = new LinearLayout(this);
+        llPiece.layout(0,0,100,100);
+        llPiece.setLayoutParams(new ActionBar.LayoutParams(100, 100));
+        llPiece.setOrientation(LinearLayout.HORIZONTAL);
 
         Button btnCreate = (Button) findViewById(R.id.bNewGame);
         btnCreate.setOnClickListener(new View.OnClickListener(){
@@ -35,8 +39,15 @@ public class homePage extends ActionBarActivity {
                 final EditText etBlack = (EditText) findViewById(R.id.etBlackName);
                 etBlack.setText("Shit kinda worked!");
 
+
+
                 Drawable drawable = getResources().getDrawable(R.drawable.pieceblack);
-                appImageView.setImageDrawable(drawable); // set the image to the ImageView
+                //ivPic.setImageDrawable(drawable); // set the image to the ImageView
+                //llPiece.addView(ivPic);
+                //setContentView(llPiece);
+
+
+
             }
         });
 
