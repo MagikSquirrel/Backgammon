@@ -60,12 +60,32 @@
 
         </LinearLayout>
 
-        <GridView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:id="@+id/gBoard"
+        <GridLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/glBoard"
+            android:focusableInTouchMode="true"
             android:background="@drawable/board"
-            android:layout_weight="0.52" />
+            android:columnCount="7"
+            android:rowCount="7">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:id="@+id/iv11"
+                android:focusableInTouchMode="true"
+                android:src="@drawable/pieceblack"
+                android:visibility="invisible"
+                android:layout_row="0"
+                android:layout_column="0" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView"
+                android:layout_row="6"
+                android:layout_column="6" />
+        </GridLayout>
 
     </LinearLayout>
 </RelativeLayout>

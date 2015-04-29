@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -46,14 +47,18 @@ public class homePage extends ActionBarActivity {
                 Toast.makeText(mContext, "New Game Started", Toast.LENGTH_LONG).show();
 
                 ImageView ivBlack = new ImageView(homePage.this);
-                ivBlack.setLayoutParams(new GridView.LayoutParams(85, 85));
+                ivBlack.setLayoutParams(new GridView.LayoutParams(1, 1));
                 ivBlack.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 ivBlack.setPadding(8, 8, 8, 8);
                 ivBlack.setImageResource(R.drawable.pieceblack);
                 ivBlack.setVisibility(View.VISIBLE);
 
-                GridView gBoard = (GridView) findViewById(R.id.gBoard);
-                gBoard.addView(ivBlack);
+                GridLayout glBoard = (GridLayout) findViewById(R.id.glBoard);
+                glBoard.addView(ivBlack);
+
+                ImageView iv11 = (ImageView) findViewById(R.id.iv11);
+                //iv11.setImageResource(R.drawable.pieceblack);
+                iv11.setVisibility(View.VISIBLE);
             }
         });
 
@@ -68,6 +73,9 @@ public class homePage extends ActionBarActivity {
 
                 final EditText etWhite = (EditText) findViewById(R.id.etWhiteName);
                 etWhite.setText("");
+
+                ImageView iv11 = (ImageView) findViewById(R.id.iv11);
+                iv11.setVisibility(View.INVISIBLE);
             }
         });
 
