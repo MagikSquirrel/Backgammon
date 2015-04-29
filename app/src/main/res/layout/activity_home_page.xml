@@ -58,6 +58,12 @@
                 android:id="@+id/bClear"
                 android:clickable="false" />
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bDisplayAll"
+                android:id="@+id/bDisplayAll" />
+
         </LinearLayout>
 
         <GridLayout
@@ -69,22 +75,47 @@
             android:columnCount="7"
             android:rowCount="7">
 
-            <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:id="@+id/iv11"
-                android:focusableInTouchMode="true"
-                android:src="@drawable/pieceblack"
-                android:visibility="invisible"
-                android:layout_row="0"
-                android:layout_column="0" />
+            <TableLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/tbBoard">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageView"
-                android:layout_row="6"
-                android:layout_column="6" />
+                <TableRow
+                    android:layout_width="fill_parent"
+                    android:layout_height="50dp"
+                    android:measureWithLargestChild="false"
+                    android:id="@+id/trBoardTop">
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:id="@+id/iv11"
+                        android:layout_column="0" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="fill_parent"
+                    android:layout_height="50dp"
+                    android:id="@+id/trBoardBot">
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:id="@+id/ivb1"
+                        android:layout_column="20" />
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:id="@+id/ivb2"
+                        android:layout_column="40" />
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:id="@+id/ivb3"
+                        android:layout_column="60" />
+                </TableRow>
+            </TableLayout>
+
         </GridLayout>
 
     </LinearLayout>

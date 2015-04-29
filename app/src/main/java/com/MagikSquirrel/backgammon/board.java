@@ -16,6 +16,23 @@ public class board {
         }
     }
 
+    //This fills the gameboard with pieces (not a real state)
+    //This is used for testing piece graphics
+    public void fullGame() {
+        for(int i=0 ; i< _board.length ; i++){
+            _board[i] = -8;
+        }
+    }
+
+
+    //This emptys the gameboard of pieces (not a real state)
+    //This is used for testing piece graphics
+    public void emptyGame() {
+        for(int i=0 ; i< _board.length ; i++){
+            _board[i] = 0;
+        }
+    }
+
     //Setup New game by placing pieces where they should
     //Negatives are black, positives are white
     public void newGame() {

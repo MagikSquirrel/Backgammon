@@ -30,8 +30,40 @@ public class homePage extends ActionBarActivity {
     private void redrawBoard()
     {
         int[] counts = bGameBoard.getCount();
-        for(int i=0 ; i<= counts.length ; i++){
-            
+        for(int i=0 ; i<counts.length ; i++) {
+            ImageView iv = null;
+
+            if (i == 1) {
+                iv = (ImageView) findViewById(R.id.iv11);
+            }
+            else if (i == 2) {
+                iv = (ImageView) findViewById(R.id.ivb1);
+            }
+            else if (i == 3) {
+                iv = (ImageView) findViewById(R.id.ivb2);
+            }
+            else if (i == 4) {
+                iv = (ImageView) findViewById(R.id.ivb3);
+            }
+
+            //Vis or invis
+            if(iv == null){
+                //Do nothing since no Image View was found
+            }
+            else if (counts[i] != 0) {
+                //Black or White?
+                if (counts[i] > 0) {
+                    iv.setImageResource(R.drawable.piecered);
+                } else {
+                    iv.setImageResource(R.drawable.pieceblack);
+                }
+
+                iv.setVisibility(View.VISIBLE);
+            }
+            else {
+                iv.setVisibility(View.INVISIBLE);
+            }
+
         }
     }
 
@@ -41,7 +73,10 @@ public class homePage extends ActionBarActivity {
         setContentView(R.layout.activity_home_page);
 
         //Create the internal game board
+        bGameBoard = new board();
 
+        //Draw the first one
+        redrawBoard();
 
         final LinearLayout llPiece = new LinearLayout(this);
         llPiece.layout(0,0,100,100);
@@ -58,19 +93,8 @@ public class homePage extends ActionBarActivity {
 
                 Toast.makeText(mContext, "New Game Started", Toast.LENGTH_LONG).show();
 
-                ImageView ivBlack = new ImageView(homePage.this);
-                ivBlack.setLayoutParams(new GridView.LayoutParams(1, 1));
-                ivBlack.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                ivBlack.setPadding(8, 8, 8, 8);
-                ivBlack.setImageResource(R.drawable.pieceblack);
-                ivBlack.setVisibility(View.VISIBLE);
-
-                GridLayout glBoard = (GridLayout) findViewById(R.id.glBoard);
-                glBoard.addView(ivBlack);
-
-                ImageView iv11 = (ImageView) findViewById(R.id.iv11);
-                //iv11.setImageResource(R.drawable.pieceblack);
-                iv11.setVisibility(View.VISIBLE);
+                bGameBoard.newGame();
+                redrawBoard();
             }
         });
 
@@ -86,8 +110,19 @@ public class homePage extends ActionBarActivity {
                 final EditText etWhite = (EditText) findViewById(R.id.etWhiteName);
                 etWhite.setText("");
 
-                ImageView iv11 = (ImageView) findViewById(R.id.iv11);
-                iv11.setVisibility(View.INVISIBLE);
+                bGameBoard.emptyGame();
+                redrawBoard();
+            }
+        });
+
+        //DISPLAY ALL BUTTON
+        Button btnDisplayAll = (Button) findViewById(R.id.bDisplayAll);
+        btnDisplayAll.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+
+                bGameBoard.fullGame();
+                redrawBoard();
             }
         });
 

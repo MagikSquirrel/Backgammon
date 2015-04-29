@@ -5,4 +5,5 @@
     <string name="tvWhite">White Player Name</string>
     <string name="bNewGame">New Game</string>
     <string name="bClear">Clear</string>
+    <string name="bDisplayAll">Display All</string>
 </resources>
