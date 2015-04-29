@@ -25,11 +25,23 @@ import android.widget.Toast;
 public class homePage extends ActionBarActivity {
 
     private Context mContext;
+    private board bGameBoard;
+
+    private void redrawBoard()
+    {
+        int[] counts = bGameBoard.getCount();
+        for(int i=0 ; i<= counts.length ; i++){
+            
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
+
+        //Create the internal game board
+
 
         final LinearLayout llPiece = new LinearLayout(this);
         llPiece.layout(0,0,100,100);
