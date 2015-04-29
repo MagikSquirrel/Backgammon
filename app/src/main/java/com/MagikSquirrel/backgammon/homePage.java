@@ -18,8 +18,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.GridView;
+import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TableRow;
 import android.widget.Toast;
 
 public class homePage extends ActionBarActivity {
@@ -27,44 +29,63 @@ public class homePage extends ActionBarActivity {
     private Context mContext;
     private board bGameBoard;
 
+    private static enum Player
+    {
+        BLACK,
+        WHITE
+    }
+
+
+
+    //Sets an image view to be owned by a particular player (or empty if null)
+    private void setImageViewOwnerById(Player player, ImageView iv) {
+        if(player == Player.BLACK){
+            iv.setImageResource(R.drawable.pieceblack);
+            iv.setVisibility(View.VISIBLE);
+        }
+        else if(player == Player.WHITE){
+            iv.setImageResource(R.drawable.piecered);
+            iv.setVisibility(View.VISIBLE);
+        }
+        else {
+            iv.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void setImageViewOwnerById(Player player, int id) {
+        //Gotta love method overloading!
+        setImageViewOwnerById(player, (ImageView) findViewById(id));
+    }
+
+    //
+    private void initBoard()
+    {
+        TableRow trTop = (TableRow) findViewById(R.id.trBoardTop);
+
+
+        for(int i=0 ; i<= 10 ; i++){
+            ImageView iv = new ImageView(mContext);
+            iv.layout(i,i,i+1,i+1);
+
+            trTop.addView(iv);
+        }
+
+
+
+        for(int i = 0 ; i < trTop.getChildCount() ; i++){
+            ImageView v = (ImageView) trTop.getChildAt(i);
+            setImageViewOwnerById(Player.BLACK, v);
+        }
+
+        TableRow trBot = (TableRow) findViewById(R.id.trBoardBot);
+        for(int i = 0 ; i < trBot.getChildCount() ; i++){
+            ImageView v = (ImageView) trBot.getChildAt(i);
+            setImageViewOwnerById(Player.BLACK, v);
+        }
+    }
+
     private void redrawBoard()
     {
-        int[] counts = bGameBoard.getCount();
-        for(int i=0 ; i<counts.length ; i++) {
-            ImageView iv = null;
-
-            if (i == 1) {
-                iv = (ImageView) findViewById(R.id.iv11);
-            }
-            else if (i == 2) {
-                iv = (ImageView) findViewById(R.id.ivb1);
-            }
-            else if (i == 3) {
-                iv = (ImageView) findViewById(R.id.ivb2);
-            }
-            else if (i == 4) {
-                iv = (ImageView) findViewById(R.id.ivb3);
-            }
-
-            //Vis or invis
-            if(iv == null){
-                //Do nothing since no Image View was found
-            }
-            else if (counts[i] != 0) {
-                //Black or White?
-                if (counts[i] > 0) {
-                    iv.setImageResource(R.drawable.piecered);
-                } else {
-                    iv.setImageResource(R.drawable.pieceblack);
-                }
-
-                iv.setVisibility(View.VISIBLE);
-            }
-            else {
-                iv.setVisibility(View.INVISIBLE);
-            }
-
-        }
     }
 
     @Override
@@ -76,12 +97,8 @@ public class homePage extends ActionBarActivity {
         bGameBoard = new board();
 
         //Draw the first one
-        redrawBoard();
-
-        final LinearLayout llPiece = new LinearLayout(this);
-        llPiece.layout(0,0,100,100);
-        llPiece.setLayoutParams(new ActionBar.LayoutParams(100, 100));
-        llPiece.setOrientation(LinearLayout.HORIZONTAL);
+        mContext = getApplicationContext();
+        initBoard();
 
         //NEW GAME BUTTON
         Button btnCreate = (Button) findViewById(R.id.bNewGame);

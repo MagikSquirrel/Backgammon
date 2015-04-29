@@ -81,38 +81,15 @@
                 android:id="@+id/tbBoard">
 
                 <TableRow
-                    android:layout_width="fill_parent"
-                    android:layout_height="50dp"
-                    android:measureWithLargestChild="false"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
                     android:id="@+id/trBoardTop">
-
-                    <ImageView
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:id="@+id/iv11"
-                        android:layout_column="0" />
                 </TableRow>
 
                 <TableRow
-                    android:layout_width="fill_parent"
-                    android:layout_height="50dp"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
                     android:id="@+id/trBoardBot">
-
-                    <ImageView
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:id="@+id/ivb1"
-                        android:layout_column="20" />
-                    <ImageView
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:id="@+id/ivb2"
-                        android:layout_column="40" />
-                    <ImageView
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:id="@+id/ivb3"
-                        android:layout_column="60" />
                 </TableRow>
             </TableLayout>
 
