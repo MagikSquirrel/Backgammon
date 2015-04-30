@@ -21,13 +21,16 @@ import android.widget.GridView;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class homePage extends ActionBarActivity {
 
     private Context mContext;
     private board bGameBoard;
+    private ImageView[][] imgBoard;
 
     private static enum Player
     {
@@ -35,57 +38,186 @@ public class homePage extends ActionBarActivity {
         WHITE
     }
 
+    private Bitmap bmBlack;
+    private Bitmap bmWhite;
+    private Bitmap bmClear;
 
 
     //Sets an image view to be owned by a particular player (or empty if null)
-    private void setImageViewOwnerById(Player player, ImageView iv) {
-        if(player == Player.BLACK){
-            iv.setImageResource(R.drawable.pieceblack);
-            iv.setVisibility(View.VISIBLE);
+    private void setImageViewOwner(Player player, ImageView iv) {
+
+        try {
+
+            if (player == Player.BLACK) {
+                iv.setImageBitmap(bmBlack);
+                iv.setVisibility(View.VISIBLE);
+            } else if (player == Player.WHITE) {
+                iv.setImageBitmap(bmWhite);
+                iv.setVisibility(View.VISIBLE);
+            } else {
+                iv.setImageBitmap(bmClear);
+                iv.setVisibility(View.INVISIBLE);
+            }
         }
-        else if(player == Player.WHITE){
-            iv.setImageResource(R.drawable.piecered);
-            iv.setVisibility(View.VISIBLE);
-        }
-        else {
-            iv.setVisibility(View.INVISIBLE);
+        catch (Exception e){
+
         }
     }
 
-    private void setImageViewOwnerById(Player player, int id) {
+    private void setImageViewOwner(Player player, int id) {
         //Gotta love method overloading!
-        setImageViewOwnerById(player, (ImageView) findViewById(id));
+        setImageViewOwner(player, (ImageView) findViewById(id));
     }
 
-    //
-    private void initBoard()
-    {
-        TableRow trTop = (TableRow) findViewById(R.id.trBoardTop);
+    //This initializes the board, and all the game pieces
+    //It spaces out the columns and rows appropriately.
+    private void initBoard() {
+        //Set the two Bitmaps which will be used heavily
+        bmBlack = BitmapFactory.decodeResource(getResources(), R.drawable.black);
+        bmWhite = BitmapFactory.decodeResource(getResources(), R.drawable.red);
+        bmClear = BitmapFactory.decodeResource(getResources(), R.drawable.pix_empty);
 
+        bmBlack = Bitmap.createScaledBitmap(bmBlack, 50, 50, true);
+        bmWhite = Bitmap.createScaledBitmap(bmWhite, 50, 50, true);
+        bmClear = Bitmap.createScaledBitmap(bmClear, 50, 50, true);
 
-        for(int i=0 ; i<= 10 ; i++){
-            ImageView iv = new ImageView(mContext);
-            iv.layout(i,i,i+1,i+1);
+        //Left Right Border Pixels
+        Bitmap bmLR = BitmapFactory.decodeResource(getResources(), R.drawable.green);
+        bmLR = Bitmap.createScaledBitmap(bmLR, 39, 5, true);
 
-            trTop.addView(iv);
+        //Top Down Border Pixels
+        Bitmap bmTD = BitmapFactory.decodeResource(getResources(), R.drawable.orange);
+        bmTD = Bitmap.createScaledBitmap(bmTD, 5, 30, true);
+
+        //Middle (Between Top and Bottom) Border Pixels
+        Bitmap bmMidTB = BitmapFactory.decodeResource(getResources(), R.drawable.orange);
+        bmMidTB = Bitmap.createScaledBitmap(bmMidTB, 5, 12, true);
+
+        //Middle (Between Left and Right) Border Pixels
+        Bitmap bmMidLR = BitmapFactory.decodeResource(getResources(), R.drawable.green);
+        bmMidLR = Bitmap.createScaledBitmap(bmMidLR, 23, 5, true);
+
+        //Middle (Between Left and Right) Border Pixels
+        Bitmap bmDivider = BitmapFactory.decodeResource(getResources(), R.drawable.green);
+        bmDivider = Bitmap.createScaledBitmap(bmDivider, 30, 5, true);
+
+        //This is what will hold the 2da for image views
+        imgBoard = new ImageView[24][8];
+
+        //Now we build the table
+        TableLayout tlBoard = (TableLayout) findViewById(R.id.tlBoard);
+
+        for (int iRow = 0; iRow < 5; iRow++) {
+            TableRow tr = new TableRow(mContext);
+
+            //Border
+            if (iRow == 0 || iRow == 4) {
+                ImageView iv = new ImageView(mContext);
+                iv.setImageBitmap(bmTD);
+                tr.addView(iv);
+            }
+            //Middle Break
+            else if (iRow == 2) {
+                ImageView iv = new ImageView(mContext);
+                iv.setImageBitmap(bmMidTB);
+                tr.addView(iv);
+            }
+            //Innerboard
+            else {
+
+                for (int iCol = 0; iCol < 27; iCol++) {
+                    TableLayout tc = new TableLayout(mContext);
+
+                    //Left (and Right) Border
+                    if (iCol == 0 || iCol == 26) {
+                        ImageView iv = new ImageView(mContext);
+                        iv.setImageBitmap(bmLR);
+                        tc.addView(iv);
+                    }
+                    //Middle divider
+                    else if (iCol == 13) {
+                        ImageView iv = new ImageView(mContext);
+                        iv.setImageBitmap(bmDivider);
+                        tc.addView(iv);
+                    }
+                    //Middle between column border
+                    else if (iCol % 2 == 0) {
+                        ImageView iv = new ImageView(mContext);
+                        iv.setImageBitmap(bmMidLR);
+                        tr.addView(iv);
+                    } else {
+
+                        //WHich graphical column does this translate to in game board columns?
+                        int iBoardCol = -1;
+                        switch(iCol){
+                            case 1: iBoardCol = 11; break;
+                            case 3: iBoardCol = 10; break;
+                            case 5: iBoardCol = 9; break;
+                            case 7: iBoardCol = 8; break;
+                            case 9: iBoardCol = 7; break;
+                            case 11: iBoardCol = 6; break;
+                            case 15: iBoardCol = 5; break;
+                            case 17: iBoardCol = 4; break;
+                            case 19: iBoardCol = 3; break;
+                            case 21: iBoardCol = 2; break;
+                            case 23: iBoardCol = 1; break;
+                            case 25: iBoardCol = 0; break;
+                        }
+                        //Bottom
+                        if(iRow != 1){
+                            iBoardCol = (11-iBoardCol);
+                            iBoardCol += 12;
+                        }
+
+                        //There is a max (currently of 8 Pieces per "Cell")
+                        for (int iPiece = 0; iPiece < 8; iPiece++) {
+
+                            ImageView iv = new ImageView(mContext);
+                            if (iRow == 1) {
+                                setImageViewOwner(Player.WHITE, iv);
+                                imgBoard[(iBoardCol)][iPiece] = iv;
+                            } else {
+                                setImageViewOwner(Player.BLACK, iv);
+                                imgBoard[(iBoardCol)][7 - iPiece] = iv;
+                            }
+                            tc.addView(iv);
+                        }
+                    }
+
+                    tr.addView(tc);
+                }
+            }
+
+            tlBoard.addView(tr);
         }
 
-
-
-        for(int i = 0 ; i < trTop.getChildCount() ; i++){
-            ImageView v = (ImageView) trTop.getChildAt(i);
-            setImageViewOwnerById(Player.BLACK, v);
-        }
-
-        TableRow trBot = (TableRow) findViewById(R.id.trBoardBot);
-        for(int i = 0 ; i < trBot.getChildCount() ; i++){
-            ImageView v = (ImageView) trBot.getChildAt(i);
-            setImageViewOwnerById(Player.BLACK, v);
+        //Now we just hide those pieces.
+        for (int i = 0; i < 24; i++) {
+            for (int j = 0; j < 8; j++) {
+                setImageViewOwner(null, imgBoard[i][j]);
+            }
         }
     }
 
     private void redrawBoard()
     {
+        for(int i=0 ; i<24 ; i++) {
+            
+            int iCount = bGameBoard.getPiecesInColumn(i);
+            
+            for(int j=0 ; j<8 ; j++) {
+                if(Math.abs(iCount) > j) {
+                    if(iCount < 1)
+                        setImageViewOwner(Player.BLACK, imgBoard[i][j]);
+                    else if(iCount > 1)
+                        setImageViewOwner(Player.WHITE, imgBoard[i][j]);
+                    else if(iCount == 0)
+                        setImageViewOwner(null, imgBoard[i][j]);
+                }
+                else if(iCount == 0)
+                    setImageViewOwner(null, imgBoard[i][j]);
+            }
+        }
     }
 
     @Override

@@ -1,9 +1,13 @@
 package com.MagikSquirrel.backgammon;
 
+import android.util.Log;
+
 public class board {
     private int[] _board;
     private int _outblack; //Pieces that have been jailed
     private int _outwhite;
+
+    private String _log = "";
 
     //Constructor
     board() {
@@ -70,8 +74,8 @@ public class board {
             }
         }
 
-        System.out.println(sTop + "\n" + sBot);
-        System.out.println("Out: Black ("+_outblack+") White ("+_outwhite+")\n");
+        Log.i(_log, sTop + "\n" + sBot);
+        Log.i(_log, "Out: Black ("+_outblack+") White ("+_outwhite+")\n");
     }
 
     //Internal code to move pieces easily.
@@ -96,7 +100,7 @@ public class board {
 
         //Free?             OR      Same side add
         if( (_board[iDst] == 0) || (bWhite && _board[iDst] < 0) ) {
-            System.out.println("Freedom!");
+            Log.i(_log, "Freedom!");
             if(bWhite) {
                 _board[iDst]--;
                 _outwhite--;
@@ -111,7 +115,7 @@ public class board {
             System.out.print("Opposite side unjail - ");
             //Jail the enemy!
             if(Math.abs(_board[iDst]) == 1) {
-                System.out.println(" Counterjail!");
+                Log.i(_log, " Counterjail!");
                 if(bWhite) {
                     _board[iDst]-=2;
                     _outwhite--;
@@ -125,12 +129,16 @@ public class board {
             }
             //Can't move here, blocked
             else {
-                System.out.println(" Blocked. Try again.");
+                Log.i(_log, " Blocked. Try again.");
                 return -1;
             }
         }
 
         return 0;
+    }
+
+    public int getPiecesInColumn(int i){
+        return _board[i];
     }
 
     public int[] getCount(){
@@ -144,22 +152,22 @@ public class board {
 
         //Are these in bounds?
         if(iSrc < 0 || iDst < 0 || iSrc >= 24 || iDst >= 24) {
-            System.out.println("Out of bounds move!");
+            Log.i(_log, "Out of bounds move!");
             return -1;
         }
         //Do we have a piece to move?
         else if(_board[iSrc] == 0) {
-            System.out.println("No source piece!");
+            Log.i(_log, "No source piece!");
             return -1;
         }
         //Is the space free?
         else if(_board[iDst] == 0) {
-            System.out.println("No Team!");
+            Log.i(_log, "No Team!");
             _move(iSrc, iDst);
         }
         //Is the dest the same team as source?
         else if (!(_board[iSrc] < 0 ^ _board[iDst] < 0)) {
-            System.out.println("Same Team!");
+            Log.i(_log, "Same Team!");
             _move(iSrc, iDst);
         }
         else {
@@ -171,12 +179,12 @@ public class board {
                 else
                     _outblack++;
 
-                System.out.println(" jailed!");
+                Log.i(_log, " jailed!");
                 _move(iSrc, iDst);
                 return 1;
             }
 
-            System.out.println(" blocked! Try again.");
+            Log.i(_log, " blocked! Try again.");
             return -1;
         }
         return 0;
