@@ -9,12 +9,17 @@ import android.text.Layout;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.List;
 
 public class homePage extends ActionBarActivity {
 
@@ -40,6 +45,13 @@ public class homePage extends ActionBarActivity {
         NumberPicker npDie2 = (NumberPicker) findViewById(R.id.npDie2);
         npDie2.setMinValue(1); npDie2.setMaxValue(6);
 
+        //Add sources to spinner
+        Spinner sSource = (Spinner) findViewById(R.id.sSource);
+        List<String> lsSources = gameBoard.getColumnsWithPieces(com.MagikSquirrel.backgammon.gameBoard.Player.BLACK);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext,
+                android.R.layout.simple_spinner_item, lsSources);
+        sSource.setAdapter(adapter);
+
         //NEW GAME BUTTON
         Button btnCreate = (Button) findViewById(R.id.bNewGame);
         btnCreate.setOnClickListener(new View.OnClickListener(){
@@ -50,6 +62,18 @@ public class homePage extends ActionBarActivity {
 
                 gameBoard.newGame();
                 imgBoard.redrawBoard(gameBoard);
+
+                Button bMove = (Button) findViewById(R.id.bMove);
+                bMove.setEnabled(true);
+            }
+        });
+
+        //MOVE ALL BUTTON
+        Button btnMove = (Button) findViewById(R.id.bMove);
+        btnMove.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+
             }
         });
 
@@ -61,6 +85,9 @@ public class homePage extends ActionBarActivity {
 
                 gameBoard.emptyGame();
                 imgBoard.redrawBoard(gameBoard);
+
+                Button bMove = (Button) findViewById(R.id.bMove);
+                bMove.setEnabled(false);
             }
         });
 

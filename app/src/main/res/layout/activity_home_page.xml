@@ -35,8 +35,16 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Move"
+                android:id="@+id/bMove"
+                android:enabled="false" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/bDisplayAll"
-                android:id="@+id/bDisplayAll" />
+                android:id="@+id/bDisplayAll"
+                android:visibility="invisible" />
 
         </LinearLayout>
 
@@ -80,6 +88,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/npDie2" />
+
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/sSource"
+                android:layout_weight="1" />
 
         </LinearLayout>
 

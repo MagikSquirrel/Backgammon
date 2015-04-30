@@ -1,11 +1,21 @@
-//package com.MagikSquirrel.backgammon;
+package com.MagikSquirrel.backgammon;
 
-//import android.util.Log;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class gameBoard {
     private int[] _board;
     private int _outblack; //Pieces that have been jailed
     private int _outwhite;
+
+    public static enum Player
+    {
+        BLACK,
+        WHITE,
+        NULL
+    }
 
     private String _log = "";
 
@@ -53,7 +63,7 @@ public class gameBoard {
         _board[16] = -3;
 
         //white home
-        _board[18] = -2;
+        _board[18] = -5;
         _board[23] = 2;
     }
     
@@ -163,6 +173,22 @@ public class gameBoard {
 
     public int getPiecesInColumn(int i){
         return _board[i];
+    }
+
+    public List<String> getColumnsWithPieces(Player p){
+        List<String> list = new ArrayList<>();
+        for(int i=0 ; i<_board.length ; i++){
+
+            //Black team
+            if(p == Player.BLACK && _board[i] < 0)
+                list.add(Integer.toString(i));
+
+            //Black team
+            if(p == Player.WHITE && _board[i] > 0)
+                list.add(Integer.toString(i));
+        }
+
+        return list;
     }
 
     public int[] getCount(){
