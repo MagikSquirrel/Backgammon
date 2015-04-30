@@ -13,32 +13,6 @@
         android:layout_centerHorizontal="true"
         android:weightSum="1">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/tvBlack"
-            android:id="@+id/textView" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/etBlackName"
-            android:inputType="text" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/tvWhite"
-            android:id="@+id/textView2" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/etWhiteName"
-            android:inputType="text" />
-
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -68,7 +42,7 @@
 
         <GridLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="290dp"
             android:id="@+id/glBoard"
             android:focusableInTouchMode="true"
             android:background="@drawable/board"
@@ -77,12 +51,37 @@
 
             <TableLayout
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/tlBoard">
 
             </TableLayout>
 
         </GridLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Choose Your Dice"
+            android:id="@+id/tvDice"
+            android:singleLine="false" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/npDie1" />
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/npDie2" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </RelativeLayout>

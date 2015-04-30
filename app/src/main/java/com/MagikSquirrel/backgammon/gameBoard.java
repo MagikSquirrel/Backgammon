@@ -2,7 +2,7 @@ package com.MagikSquirrel.backgammon;
 
 import android.util.Log;
 
-public class board {
+public class gameBoard {
     private int[] _board;
     private int _outblack; //Pieces that have been jailed
     private int _outwhite;
@@ -10,7 +10,7 @@ public class board {
     private String _log = "";
 
     //Constructor
-    board() {
+    gameBoard() {
         _board = new int[24];
         _outblack = 0;
         _outwhite = 0;
