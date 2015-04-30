@@ -1,6 +1,6 @@
-package com.MagikSquirrel.backgammon;
+//package com.MagikSquirrel.backgammon;
 
-import android.util.Log;
+//import android.util.Log;
 
 public class gameBoard {
     private int[] _board;
@@ -56,8 +56,32 @@ public class gameBoard {
         _board[18] = -2;
         _board[23] = 2;
     }
+    
+	private String printMoveString(boolean b) {
+		if(b)
+			return "X";
+		return "0";
+	}
+	public void printMoves(boolean moves[]) {
+        String sTop = "";
+        String sBot = "";
 
-    public void print() {
+        for(int i=0 ; i< 24 ; i++) {
+            //This is a top row
+            if(i <= 11) {
+                sTop = (printMoveString(moves[i]) + "|" + sTop);
+            }
+
+            //This is a bottom row
+            else {
+                sBot =  (sBot + printMoveString(moves[i]) + "|");
+            }
+        }
+
+        System.out.println(sTop + "\n" + sBot);
+	}
+	
+	public void print() {
 
         String sTop = "";
         String sBot = "";
@@ -74,8 +98,8 @@ public class gameBoard {
             }
         }
 
-        Log.i(_log, sTop + "\n" + sBot);
-        Log.i(_log, "Out: Black ("+_outblack+") White ("+_outwhite+")\n");
+        System.out.println(sTop + "\n" + sBot);
+        System.out.println("Out: Black ("+_outblack+") White ("+_outwhite+")\n");
     }
 
     //Internal code to move pieces easily.
@@ -100,7 +124,7 @@ public class gameBoard {
 
         //Free?             OR      Same side add
         if( (_board[iDst] == 0) || (bWhite && _board[iDst] < 0) ) {
-            Log.i(_log, "Freedom!");
+            System.out.println("Freedom!");
             if(bWhite) {
                 _board[iDst]--;
                 _outwhite--;
@@ -115,7 +139,7 @@ public class gameBoard {
             System.out.print("Opposite side unjail - ");
             //Jail the enemy!
             if(Math.abs(_board[iDst]) == 1) {
-                Log.i(_log, " Counterjail!");
+                System.out.println(" Counterjail!");
                 if(bWhite) {
                     _board[iDst]-=2;
                     _outwhite--;
@@ -129,7 +153,7 @@ public class gameBoard {
             }
             //Can't move here, blocked
             else {
-                Log.i(_log, " Blocked. Try again.");
+                System.out.println(" Blocked. Try again.");
                 return -1;
             }
         }
@@ -144,49 +168,131 @@ public class gameBoard {
     public int[] getCount(){
         return _board;
     }
-
-    public int movePiece(int iSrc, int iCount) {
+	
+	//Returns all the destination columns allowed WITH the dice restrictions
+	public boolean[] getAllowedMoves(int iSrc, int iDie1, int iDie2) {
+		int iCombo = (iDie1+iDie2);		
+		boolean[] bMoves = getAllowedMoves(iSrc);
+		
+		//If we're white we're going in reverse.
+		if(getPiecesInColumn(iSrc) > 0) {
+			iDie1 = -(iDie1);
+			iDie2 = -(iDie2);
+			iCombo = -(iCombo);
+		}
+		
+		for(int i=0 ; i<bMoves.length ; i++) {
+		
+			//Are we allowed to move there currently?
+			if(bMoves[i]) {
+			
+				//Is Die1 allowed?
+				if(i == (iSrc + iDie1)) {
+				}
+				//Is Die2 allowed?
+				else if(i == (iSrc + iDie2)) {
+				}
+				//Is Combo allowed?
+				else if(i == (iSrc + iCombo)) {
+				}
+				//No allowance to move here.
+				else {
+					bMoves[i] = false;
+				}				
+			}			
+		}
+		
+		return bMoves;
+	}
+	
+	//Returns all the destination columns allowed
+	public boolean[] getAllowedMoves(int iSrc) {
+	
+		boolean[] bReturn;
+		bReturn = new boolean[_board.length];
+	
+		for(int i=0 ; i<_board.length ; i++) {
+		
+			int iCount = (i - iSrc);
+	
+			if(movePiece(iSrc, iCount, true) == 0) {
+				//System.out.println("We can move from "+Integer.toString(iSrc)+" to "+Integer.toString(i));
+				bReturn[i] = true;
+			}
+			else {
+				//System.out.println("We CAN'T move from "+Integer.toString(iSrc)+" to "+Integer.toString(i));
+				bReturn[i] = false;
+			}
+			
+		}
+		
+		return bReturn;
+	}
+	
+	public int movePiece(int iSrc, int iCount, boolean bTest) {
 
         //Where is this going?
         int iDst = (iSrc + iCount);
 
         //Are these in bounds?
         if(iSrc < 0 || iDst < 0 || iSrc >= 24 || iDst >= 24) {
-            Log.i(_log, "Out of bounds move!");
+            //System.out.println("Out of bounds move!");
             return -1;
         }
         //Do we have a piece to move?
         else if(_board[iSrc] == 0) {
-            Log.i(_log, "No source piece!");
+            //System.out.println("No source piece!");
             return -1;
         }
+		//Is the destination the SAME as the source?
+		else if(iDst == iSrc){
+	        //System.out.println("Can't move back into the same spot");
+            return -2;
+		}
         //Is the space free?
         else if(_board[iDst] == 0) {
-            Log.i(_log, "No Team!");
+		
+			//Testing Only
+			if(bTest)
+				return 0;
+		
+            //System.out.println("No Team!");
             _move(iSrc, iDst);
         }
         //Is the dest the same team as source?
         else if (!(_board[iSrc] < 0 ^ _board[iDst] < 0)) {
-            Log.i(_log, "Same Team!");
-            _move(iSrc, iDst);
+            //System.out.println("Same Team!");
+
+			//Testing Only
+			if(bTest)
+				return 0;
+			//Actual Move
+			else			
+				_move(iSrc, iDst);
         }
         else {
-            System.out.print("Opposite Team - ");
+            //System.out.print("Opposite Team - ");
             //If the enemy only has one piece we can kill it!
             if(Math.abs(_board[iDst]) <= 1) {
-                if (_board[iDst] < 0)
-                    _outwhite++;
-                else
-                    _outblack++;
-
-                Log.i(_log, " jailed!");
-                _move(iSrc, iDst);
-                return 1;
+			
+			//System.out.println(" jailed!");
+			
+			//Testing Only
+			if(bTest)
+				return 0;		
+			
+			if (_board[iDst] < 0)
+				_outwhite++;
+			else
+				_outblack++;
+			
+			_move(iSrc, iDst);
+			return 1;
             }
 
-            Log.i(_log, " blocked! Try again.");
+            //System.out.println(" blocked! Try again.");
             return -1;
         }
-        return 0;
+        return 1;
     }
 }
