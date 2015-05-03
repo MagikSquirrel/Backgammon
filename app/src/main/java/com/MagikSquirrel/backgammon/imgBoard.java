@@ -5,9 +5,13 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+
+import java.util.List;
 
 /**
  * Created by prusek on 4/30/2015.
@@ -38,6 +42,17 @@ public class imgBoard {
 
         //Initilize the board...
         initBoard();
+    }
+
+    //This updates the spinner with a list of columsn where the current
+    //player has pieces avaliable
+    public Spinner updateSpinnerChoices(gameBoard gameBoard, Spinner sSource, int id) {
+        List<String> lsSources = gameBoard.getColumnsWithPieces(com.MagikSquirrel.backgammon.gameBoard.Player.BLACK);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(_mContext,
+                id, lsSources);
+        sSource.setAdapter(adapter);
+
+        return sSource;
     }
 
     //Sets an image view to be owned by a particular player (or empty if null)

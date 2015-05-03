@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
@@ -40,17 +41,10 @@ public class homePage extends ActionBarActivity {
         imgBoard = new imgBoard(mContext, getResources(), (TableLayout) findViewById(R.id.tlBoard));
 
         //Create dice options
-        NumberPicker npDie1 = (NumberPicker) findViewById(R.id.npDie1);
+        final NumberPicker npDie1 = (NumberPicker) findViewById(R.id.npDie1);
         npDie1.setMinValue(1); npDie1.setMaxValue(6);
-        NumberPicker npDie2 = (NumberPicker) findViewById(R.id.npDie2);
+        final NumberPicker npDie2 = (NumberPicker) findViewById(R.id.npDie2);
         npDie2.setMinValue(1); npDie2.setMaxValue(6);
-
-        //Add sources to spinner
-        Spinner sSource = (Spinner) findViewById(R.id.sSource);
-        List<String> lsSources = gameBoard.getColumnsWithPieces(com.MagikSquirrel.backgammon.gameBoard.Player.BLACK);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext,
-                android.R.layout.simple_spinner_item, lsSources);
-        sSource.setAdapter(adapter);
 
         //NEW GAME BUTTON
         Button btnCreate = (Button) findViewById(R.id.bNewGame);
@@ -63,6 +57,10 @@ public class homePage extends ActionBarActivity {
                 gameBoard.newGame();
                 imgBoard.redrawBoard(gameBoard);
 
+                //Give black a go
+                Spinner sSpin = (Spinner) findViewById(R.id.sSource);
+                imgBoard.updateSpinnerChoices(gameBoard, sSpin, android.R.layout.simple_spinner_item);
+
                 Button bMove = (Button) findViewById(R.id.bMove);
                 bMove.setEnabled(true);
             }
@@ -73,6 +71,30 @@ public class homePage extends ActionBarActivity {
         btnMove.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+
+                //Get the source value (clolumn selection)
+                Spinner sSpin = (Spinner) findViewById(R.id.sSource);
+                int iSrc = Integer.parseInt(sSpin.getSelectedItem().toString());
+
+                //Get the states of the spinners (contain the value of our dice)
+                CheckBox cbDie1 = (CheckBox) findViewById(R.id.cbDie1);
+                CheckBox cbDie2 = (CheckBox) findViewById(R.id.cbDie2);
+                int iCount = 0;
+
+                if(cbDie1.isChecked())
+                    iCount += npDie1.getValue();
+
+                if(cbDie2.isChecked())
+                    iCount += npDie2.getValue();
+
+                //Move the piece
+                int iVal = gameBoard.movePiece(iSrc, iCount, false);
+                Toast.makeText(mContext, "Move was a :"+Integer.toString(iVal), Toast.LENGTH_SHORT).show();
+
+                //Redraw the board
+                imgBoard.redrawBoard(gameBoard);
+                imgBoard.updateSpinnerChoices(gameBoard, sSpin, android.R.layout.simple_spinner_item);
+
 
             }
         });
