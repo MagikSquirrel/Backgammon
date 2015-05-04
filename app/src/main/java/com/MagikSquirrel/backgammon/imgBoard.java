@@ -62,13 +62,13 @@ public class imgBoard {
 
             if (player == Player.BLACK) {
                 iv.setImageBitmap(bmBlack);
-                iv.setVisibility(View.VISIBLE);
+                //iv.setVisibility(View.VISIBLE);
             } else if (player == Player.WHITE) {
                 iv.setImageBitmap(bmWhite);
-                iv.setVisibility(View.VISIBLE);
+                //iv.setVisibility(View.VISIBLE);
             } else {
                 iv.setImageBitmap(bmClear);
-                iv.setVisibility(View.INVISIBLE);
+                //iv.setVisibility(View.INVISIBLE);
             }
         }
         catch (Exception e){
@@ -219,10 +219,10 @@ public class imgBoard {
                         setImageViewOwner(Player.BLACK, imgBoard[i][j]);
                     else if(iCount > 1)
                         setImageViewOwner(Player.WHITE, imgBoard[i][j]);
-                    else if(iCount == 0)
+                    else
                         setImageViewOwner(null, imgBoard[i][j]);
                 }
-                else if(iCount == 0)
+                else
                     setImageViewOwner(null, imgBoard[i][j]);
             }
         }

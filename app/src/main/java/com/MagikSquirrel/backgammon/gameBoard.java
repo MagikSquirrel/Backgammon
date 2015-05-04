@@ -1,6 +1,6 @@
 package com.MagikSquirrel.backgammon;
 
-import android.util.Log;
+//import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +50,10 @@ public class gameBoard {
     //Setup New game by placing pieces where they should
     //Negatives are black, positives are white
     public void newGame() {
+
+        //Clear the board.
+        emptyGame();
+
         //black home
         _board[0] = -2;
         _board[5] = 5;

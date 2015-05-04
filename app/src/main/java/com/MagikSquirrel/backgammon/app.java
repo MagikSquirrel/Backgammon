@@ -19,9 +19,7 @@ public class app {
 		return randomNum;
 	}
 
-    public static void main(String[] args) {
-
-        /*
+    public static void main(String[] args) {        
      
         //Create a new empty game board
         gameBoard bg = new gameBoard();    
@@ -49,13 +47,15 @@ public class app {
 		Scanner in = new Scanner(System.in);
 		while(iSrc != -1) {
 			iSrc = in.nextInt();
-			iDie1 = randInt(1, 6);
-			iDie2 = randInt(1, 6);
+			iDie1 = in.nextInt(); //randInt(1, 6);
+			iDie2 = in.nextInt(); //randInt(1, 6);
 			
 			System.out.println("Rolled a ["+Integer.toString(iDie1)+"] and ["+Integer.toString(iDie2)+"]\n");
-			bMoves = bg.getAllowedMoves(iSrc, iDie1, iDie2);
+			//bMoves = bg.getAllowedMoves(iSrc, iDie1, iDie2);
+			
+			bg.movePiece(iSrc, iDie1, false);
 			bg.print();
-			bg.printMoves(bMoves);
+			//bg.printMoves(bMoves);
 		}
 		in.close();
 		/*

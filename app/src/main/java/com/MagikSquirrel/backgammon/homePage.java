@@ -124,6 +124,24 @@ public class homePage extends ActionBarActivity {
             }
         });
 
+        //REFRESH BUTTON
+        Button btnRefresh = (Button) findViewById(R.id.bRefresh);
+        btnRefresh.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+
+                //Get the source value (clolumn selection)
+                Spinner sSpin = (Spinner) findViewById(R.id.sSource);
+                int iSrc = Integer.parseInt(sSpin.getSelectedItem().toString());
+
+                int iVal = gameBoard.getPiecesInColumn(iSrc);
+                Toast.makeText(mContext, "Move was a :"+Integer.toString(iVal), Toast.LENGTH_SHORT).show();
+
+                imgBoard.redrawBoard(gameBoard);
+
+            }
+        });
+
     }
 
 
