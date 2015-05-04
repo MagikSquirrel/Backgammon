@@ -112,8 +112,7 @@ public class homePage extends ActionBarActivity {
 
                     //Move the piece
                     iMove = gameBoard.movePiece(iSrc, iCount, false);
-                    Toast.makeText(mContext, "Move was a :" + Integer.toString(iMove), Toast.LENGTH_SHORT).show();
-
+                    //Toast.makeText(mContext, "Move was a :" + Integer.toString(iMove), Toast.LENGTH_SHORT).show();
                 }
 				
                 //Was the move successful?
@@ -131,8 +130,13 @@ public class homePage extends ActionBarActivity {
                         cbDie2.setEnabled(false);
                     }
 
+                    //Was that a winner?
+                    if(gameBoard.winGame()) {
+                        Toast.makeText(mContext, gameBoard.getCurrentPlayer().toString()+" wins!", Toast.LENGTH_LONG).show();
+                    }
+
                     //If both dies are disabled, switch player and re-enable.
-                    if (!cbDie1.isEnabled() && !cbDie2.isEnabled()) {
+                    else if (!cbDie1.isEnabled() && !cbDie2.isEnabled()) {
                         cbDie1.setEnabled(true);
                         cbDie2.setEnabled(true);
                         gameBoard.swapCurrentPlayer();
