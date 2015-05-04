@@ -9,12 +9,22 @@ public class gameBoard {
     private int[] _board;
     private int _outblack; //Pieces that have been jailed
     private int _outwhite;
+    private int _bearblack; //Pieces that have been "beared off"
+    private int _bearwhite; //Pieces that have been "beared off"
     private Player _current;
 
     public static enum Player
     {
-        BLACK,
-        WHITE,
+        BLACK {
+            public String toString() {
+                return "Black";
+            }
+        },
+        WHITE{
+            public String toString() {
+                return "White";
+            }
+        },
         NULL
     }
 
@@ -25,6 +35,8 @@ public class gameBoard {
         _board = new int[24];
         _outblack = 0;
         _outwhite = 0;
+        _bearblack = 0;
+        _bearwhite = 0;
         _current = Player.NULL;
 
         for(int i=0 ; i<24 ; i++) {
@@ -113,6 +125,17 @@ public class gameBoard {
 				_board[14] = 1;
 			
 			break;
+
+            //Setups black in their home arena, white not
+            case 2:
+
+                _board[0] = 1;
+                _board[1] = 3;
+                _board[10] = -1;
+                _board[18] = -1;
+                _board[22] = -1;
+
+            break;
 		}
 	}
     
@@ -234,20 +257,74 @@ public class gameBoard {
     public int getPiecesInColumn(int i){
         return _board[i];
     }
-	
-	//How many pieces does this player have in jail?
-	public int getPiecesInJail(Player p){
-		if(p == Player.BLACK)
-			return _outblack;
-		else if(p == Player.WHITE)
-			return _outwhite;
-			
-		return -1;
-	}
-	//Assume Current player if none passed
-	public int getPiecesInJail(){
-		return getPiecesInJail(_current);
-	}
+
+    //How many pieces does this player have in jail?
+    public int getPiecesInJail(Player p){
+        if(p == Player.BLACK)
+            return _outblack;
+        else if(p == Player.WHITE)
+            return _outwhite;
+
+        return -1;
+    }
+
+    //Assume Current player if none passed
+    public int getPiecesInJail(){
+        return getPiecesInJail(_current);
+    }
+
+    //How many pieces does this player have beared off
+    public int getPiecesBearedOff(Player p){
+        if(p == Player.BLACK)
+            return _bearblack;
+        else if(p == Player.WHITE)
+            return _bearblack;
+
+        return -1;
+    }
+
+    //Assume Current player if none passed
+    public int getPiecesBearedOff(){
+        return getPiecesBearedOff(_current);
+    }
+
+    //Can this player "Bear off" (Where all pieces are in their home arena)
+    public boolean canBearOff(Player player) {
+
+        int iHomeSize = 6; //How many "points" constitue the home arena.
+
+        //Any jailed pieces means we can't bear Off
+        if(getPiecesInJail(player) != 0)
+            return false;
+
+        //Black all pieces are 16+
+        else if(player == Player.BLACK) {
+
+            for(int i = 0; i<=_board.length-iHomeSize-1 ; i++) {
+
+                //Piece found not in home arena!
+                if(_board[i] < 0)
+                    return false;
+            }
+        }
+
+        //White all pieces are 6-
+        else if(player == Player.WHITE) {
+
+            for(int i = _board.length-iHomeSize-1; i<= _board.length-1 ; i++) {
+
+                //Piece found not in home arena!
+                if(_board[i] > 0)
+                    return false;
+            }
+        }
+
+        //No pieces found outside their arena.
+        return true;
+    }
+    public boolean canBearOff() {
+        return canBearOff(_current);
+    }
 
     //Gets all the available pieces to the current player.
     public List<String> getColumnsWithPieces(){
@@ -330,6 +407,33 @@ public class gameBoard {
 		
 		return bReturn;
 	}
+
+    //If the player has no pieces left on the board they win!
+    public boolean winGame() {
+
+        if(_current == Player.BLACK) {
+
+            for(int i=0; i<=_board.length-1 ; i++) {
+
+                //Piece found, Black didn't win yet!
+                if(_board[i] < 0)
+                    return false;
+            }
+        }
+
+        //White all pieces are 6-
+        else if(_current == Player.WHITE) {
+
+            for (int i = 0; i <= _board.length - 1; i++) {
+
+                //Piece found, White didn't win yet!
+                if (_board[i] > 0)
+                    return false;
+            }
+        }
+
+        return true;
+    }
 	
 	public int movePiece(int iSrc, int iCount, boolean bTest) {
 
@@ -337,8 +441,17 @@ public class gameBoard {
         int iDst;                   //Black move up    //White move down
 		iDst = (_board[iSrc] < 0) ? (iSrc + iCount) : (iSrc - iCount);
 
-        //Are these in bounds?
-        if(iSrc < 0 || iDst < 0 || iSrc >= 24 || iDst >= 24) {
+        //Are these "Bearing Off?"   BLACK going beyond 24 WHITE going beyond 0
+        if(canBearOff() && ((_board[iSrc] < 0 && iDst >= 24) || (_board[iSrc] > 0 && iDst < 0)) ) {
+            if(_board[iSrc] < 0)
+                _bearblack++;
+            if(_board[iSrc] > 0)
+                _bearwhite++;
+
+            _board[iSrc]--;
+        }
+        //Are these reverse moves?
+        else if(iSrc < 0 || iDst < 0 || iSrc >= 24 || iDst >= 24) {
             //System.out.println("Out of bounds move!");
             return -1;
         }
@@ -378,20 +491,20 @@ public class gameBoard {
             //If the enemy only has one piece we can kill it!
             if(Math.abs(_board[iDst]) <= 1) {
 			
-			//System.out.println(" jailed!");
-			
-			//Testing Only
+                //System.out.println(" jailed!");
 
-			if(bTest)
-				return 0;		
-			
-			if (_board[iDst] < 0)
-				_outblack++;
-			else
-				_outwhite++;
-			
-			_move(iSrc, iDst);
-			return 1;
+                //Testing Only
+
+                if(bTest)
+                    return 0;
+
+                if (_board[iDst] < 0)
+                    _outblack++;
+                else
+                    _outwhite++;
+
+                _move(iSrc, iDst);
+                return 1;
             }
 
             //System.out.println(" blocked! Try again.");
