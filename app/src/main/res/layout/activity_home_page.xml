@@ -40,11 +40,11 @@
                 android:enabled="false" />
 
             <Button
-                android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Refresh"
                 android:id="@+id/bRefresh"
-                android:visibility="invisible" />
+                android:visibility="visible" />
 
             <Button
                 android:layout_width="0dp"
@@ -73,18 +73,33 @@
 
         </GridLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Choose Your Dice"
-            android:id="@+id/tvDice"
-            android:singleLine="false" />
+        <GridLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Choose Your Dice"
+                android:id="@+id/tvDice"
+                android:singleLine="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Player: "
+                android:id="@+id/tvPlayer"
+                android:singleLine="true"
+                android:layout_marginLeft="100dp" />
+        </GridLayout>
 
         <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:orientation="vertical"

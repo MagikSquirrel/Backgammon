@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class imgBoard {
     private Context _mContext;
     private Resources _rResources;
     private TableLayout _tlBoard;
+	private TextView _tvPlayer;
 
     private ImageView[][] imgBoard;
 
@@ -35,25 +37,33 @@ public class imgBoard {
     private Bitmap bmClear;
 
     //Constructor
-    imgBoard(Context Context, Resources Resources, TableLayout Board)  {
+    imgBoard(Context Context, Resources Resources, TableLayout Board, TextView Player)  {
         _mContext = Context;
         _rResources = Resources;
         _tlBoard = Board;
+		_tvPlayer = Player;
 
-        //Initilize the board...
+        //Initialize the board...
         initBoard();
     }
 
-    //This updates the spinner with a list of columsn where the current
-    //player has pieces avaliable
+    //This updates the spinner with a list of columns where the current
+    //player has pieces available
     public Spinner updateSpinnerChoices(gameBoard gameBoard, Spinner sSource, int id) {
-        List<String> lsSources = gameBoard.getColumnsWithPieces(com.MagikSquirrel.backgammon.gameBoard.Player.BLACK);
+        List<String> lsSources = gameBoard.getColumnsWithPieces();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(_mContext,
                 id, lsSources);
         sSource.setAdapter(adapter);
 
         return sSource;
     }
+	
+	public void showCurrentPlayer (gameBoard Board){
+        if(Board.getCurrentPlayer() == gameBoard.Player.BLACK)
+		    _tvPlayer.setText("Player: Black");
+        else if(Board.getCurrentPlayer() == gameBoard.Player.WHITE)
+            _tvPlayer.setText("Player Red");
+	}
 
     //Sets an image view to be owned by a particular player (or empty if null)
     private void setImageViewOwner(Player player, ImageView iv) {
@@ -215,9 +225,9 @@ public class imgBoard {
 
             for(int j=0 ; j<8 ; j++) {
                 if(Math.abs(iCount) > j) {
-                    if(iCount < 1)
+                    if(iCount < 0)
                         setImageViewOwner(Player.BLACK, imgBoard[i][j]);
-                    else if(iCount > 1)
+                    else if(iCount > 0)
                         setImageViewOwner(Player.WHITE, imgBoard[i][j]);
                     else
                         setImageViewOwner(null, imgBoard[i][j]);
@@ -226,6 +236,9 @@ public class imgBoard {
                     setImageViewOwner(null, imgBoard[i][j]);
             }
         }
+
+        //Update the player
+        showCurrentPlayer(Board);
     }
 
 }

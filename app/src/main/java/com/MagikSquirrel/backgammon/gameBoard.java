@@ -9,6 +9,7 @@ public class gameBoard {
     private int[] _board;
     private int _outblack; //Pieces that have been jailed
     private int _outwhite;
+    private Player _current;
 
     public static enum Player
     {
@@ -24,6 +25,7 @@ public class gameBoard {
         _board = new int[24];
         _outblack = 0;
         _outwhite = 0;
+        _current = Player.NULL;
 
         for(int i=0 ; i<24 ; i++) {
             _board[i] = 0;
@@ -38,7 +40,6 @@ public class gameBoard {
         }
     }
 
-
     //This emptys the gameboard of pieces (not a real state)
     //This is used for testing piece graphics
     public void emptyGame() {
@@ -47,8 +48,28 @@ public class gameBoard {
         }
     }
 
+    public Player getCurrentPlayer() {
+        return _current;
+    }
+
+    public void swapCurrentPlayer() {
+        if(_current == Player.BLACK){
+            _current = Player.WHITE;
+        }
+        else if(_current == Player.WHITE){
+            _current = Player.BLACK;
+        }
+        else
+            _current = Player.BLACK;
+
+    }
+
     //Setup New game by placing pieces where they should
     //Negatives are black, positives are white
+    public void newGame(Player StartingPlayer){
+        _current = StartingPlayer;
+        newGame();
+    }
     public void newGame() {
 
         //Clear the board.
@@ -179,16 +200,18 @@ public class gameBoard {
         return _board[i];
     }
 
-    public List<String> getColumnsWithPieces(Player p){
+    //Gets all the avaliable pieces to the current player.
+    public List<String> getColumnsWithPieces(){
+
         List<String> list = new ArrayList<>();
         for(int i=0 ; i<_board.length ; i++){
 
             //Black team
-            if(p == Player.BLACK && _board[i] < 0)
+            if(_current == Player.BLACK && _board[i] < 0)
                 list.add(Integer.toString(i));
 
             //Black team
-            if(p == Player.WHITE && _board[i] > 0)
+            if(_current == Player.WHITE && _board[i] > 0)
                 list.add(Integer.toString(i));
         }
 
@@ -262,7 +285,8 @@ public class gameBoard {
 	public int movePiece(int iSrc, int iCount, boolean bTest) {
 
         //Where is this going?
-        int iDst = (iSrc + iCount);
+        int iDst;                   //Black move up    //White move down
+		iDst = (_board[iSrc] < -1) ? (iSrc + iCount) : (iSrc - iCount);
 
         //Are these in bounds?
         if(iSrc < 0 || iDst < 0 || iSrc >= 24 || iDst >= 24) {
