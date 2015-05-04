@@ -12,6 +12,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,6 +24,7 @@ public class imgBoard {
     private Resources _rResources;
     private TableLayout _tlBoard;
 	private TextView _tvPlayer;
+	private TextView _tvJail;
 
     private ImageView[][] imgBoard;
 
@@ -37,11 +39,12 @@ public class imgBoard {
     private Bitmap bmClear;
 
     //Constructor
-    imgBoard(Context Context, Resources Resources, TableLayout Board, TextView Player)  {
+    imgBoard(Context Context, Resources Resources, TableLayout Board, TextView Player, TextView Jail)  {
         _mContext = Context;
         _rResources = Resources;
         _tlBoard = Board;
 		_tvPlayer = Player;
+		_tvJail = Jail;
 
         //Initialize the board...
         initBoard();
@@ -49,8 +52,19 @@ public class imgBoard {
 
     //This updates the spinner with a list of columns where the current
     //player has pieces available
-    public Spinner updateSpinnerChoices(gameBoard gameBoard, Spinner sSource, int id) {
-        List<String> lsSources = gameBoard.getColumnsWithPieces();
+    public Spinner updateSpinnerChoices(gameBoard gameBoard, Spinner sSource, int id) {	
+		
+        List<String> lsSources;
+		
+		//Does this player have jailed pieces?
+		if(gameBoard.getPiecesInJail() != 0) {
+			lsSources = Arrays.asList("-1");
+        }
+		//Guess not, so they can move pieces.
+		else {
+			lsSources = gameBoard.getColumnsWithPieces();
+		}
+		
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(_mContext,
                 id, lsSources);
         sSource.setAdapter(adapter);
@@ -58,12 +72,22 @@ public class imgBoard {
         return sSource;
     }
 	
+	//Updates the Current Player Text
 	public void showCurrentPlayer (gameBoard Board){
         if(Board.getCurrentPlayer() == gameBoard.Player.BLACK)
 		    _tvPlayer.setText("Player: Black");
         else if(Board.getCurrentPlayer() == gameBoard.Player.WHITE)
             _tvPlayer.setText("Player Red");
 	}
+	
+	//Updates the Jail Count Text
+	public void showJailCount (gameBoard Board){
+        int iBlack = Board.getPiecesInJail(gameBoard.Player.BLACK);
+		int iWhite = Board.getPiecesInJail(gameBoard.Player.WHITE);
+		
+		String sOut = "Jail - Black: "+Integer.toString(iBlack)+" Red: "+Integer.toString(iWhite);
+		_tvJail.setText(sOut);
+	}	
 
     //Sets an image view to be owned by a particular player (or empty if null)
     private void setImageViewOwner(Player player, ImageView iv) {
@@ -239,6 +263,9 @@ public class imgBoard {
 
         //Update the player
         showCurrentPlayer(Board);
+		
+		//Update the jail count
+		showJailCount(Board);
     }
 
 }

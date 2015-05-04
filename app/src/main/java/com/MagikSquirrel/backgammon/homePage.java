@@ -42,7 +42,8 @@ public class homePage extends ActionBarActivity {
         imgBoard = new imgBoard(mContext,
                             getResources(),
                             (TableLayout) findViewById(R.id.tlBoard),
-                            (TextView) findViewById(R.id.tvPlayer)
+                            (TextView) findViewById(R.id.tvPlayer),
+							(TextView) findViewById(R.id.tvJail)
         );
 
         //Create dice options
@@ -53,7 +54,7 @@ public class homePage extends ActionBarActivity {
 
         //NEW GAME BUTTON
         Button btnCreate = (Button) findViewById(R.id.bNewGame);
-        btnCreate.setOnClickListener(new View.OnClickListener(){
+        btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -66,7 +67,7 @@ public class homePage extends ActionBarActivity {
                 Spinner sSpin = (Spinner) findViewById(R.id.sSource);
                 imgBoard.updateSpinnerChoices(gameBoard, sSpin, android.R.layout.simple_spinner_item);
 
-                //Enable checkboxes
+                //Enable check-boxes
                 CheckBox cbDie1 = (CheckBox) findViewById(R.id.cbDie1);
                 CheckBox cbDie2 = (CheckBox) findViewById(R.id.cbDie2);
                 cbDie1.setEnabled(true);
@@ -94,26 +95,51 @@ public class homePage extends ActionBarActivity {
 
                 if(cbDie1.isChecked()) {
                     iCount += npDie1.getValue();
-                    cbDie1.setChecked(false);
-                    cbDie1.setEnabled(false);
 				}
 
                 if(cbDie2.isChecked()) {
                     iCount += npDie2.getValue();
-                    cbDie2.setChecked(false);
-                    cbDie2.setEnabled(false);
                 }
 
-                //Move the piece
-                int iVal = gameBoard.movePiece(iSrc, iCount, false);
-                Toast.makeText(mContext, "Move was a :"+Integer.toString(iVal), Toast.LENGTH_SHORT).show();
-
-                //If both dies are disabled, switch player
-                if(!cbDie1.isEnabled() && !cbDie2.isEnabled()) {
-                    cbDie1.setEnabled(true);
-                    cbDie2.setEnabled(true);
-                    gameBoard.swapCurrentPlayer();
+                //Dealing with a jailing?
+                int iMove = -1;
+                if(iSrc == -1){
+                    iMove = gameBoard.unjailPiece(iCount);
+                    Toast.makeText(mContext, "Unjailing was a :"+Integer.toString(iMove), Toast.LENGTH_SHORT).show();
                 }
+                //Normal Movement
+                else {
+
+                    //Move the piece
+                    iMove = gameBoard.movePiece(iSrc, iCount, false);
+                    Toast.makeText(mContext, "Move was a :" + Integer.toString(iMove), Toast.LENGTH_SHORT).show();
+
+                }
+				
+                //Was the move successful?
+                if(iMove == 1) {
+
+                    //Exhaust the use of Die1.
+                    if (cbDie1.isChecked()) {
+                        cbDie1.setChecked(false);
+                        cbDie1.setEnabled(false);
+                    }
+
+                    //Exhaust the use of Die2.
+                    if (cbDie2.isChecked()) {
+                        cbDie2.setChecked(false);
+                        cbDie2.setEnabled(false);
+                    }
+
+                    //If both dies are disabled, switch player and re-enable.
+                    if (!cbDie1.isEnabled() && !cbDie2.isEnabled()) {
+                        cbDie1.setEnabled(true);
+                        cbDie2.setEnabled(true);
+                        gameBoard.swapCurrentPlayer();
+                    }
+
+				
+				}
 
                 //Redraw the board
                 imgBoard.redrawBoard(gameBoard);
@@ -157,7 +183,7 @@ public class homePage extends ActionBarActivity {
                 int iSrc = Integer.parseInt(sSpin.getSelectedItem().toString());
 
                 int iVal = gameBoard.getPiecesInColumn(iSrc);
-                Toast.makeText(mContext, "Column has this many peices :"+Integer.toString(iVal), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Column has this many pieces :"+Integer.toString(iVal), Toast.LENGTH_SHORT).show();
 
                 imgBoard.redrawBoard(gameBoard);
 
@@ -169,6 +195,23 @@ public class homePage extends ActionBarActivity {
                         android.R.layout.simple_spinner_item, lsSources);
                 sSpin.setAdapter(adapter);
 
+            }
+        });
+
+        //DEBUG BUTTON
+        final Button btnDebug = (Button) findViewById(R.id.bDebug);
+        btnDebug.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+
+                gameBoard.setTestGame(Integer.parseInt(btnDebug.getText().toString()));
+                imgBoard.redrawBoard(gameBoard);
+
+                Spinner sSpin = (Spinner) findViewById(R.id.sSource);
+                imgBoard.updateSpinnerChoices(gameBoard, sSpin, android.R.layout.simple_spinner_item);
+
+                Button bMove = (Button) findViewById(R.id.bMove);
+                bMove.setEnabled(true);
             }
         });
 

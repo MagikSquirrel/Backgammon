@@ -40,12 +40,18 @@ public class gameBoard {
         }
     }
 
-    //This emptys the gameboard of pieces (not a real state)
+    //This empties the gameboard of pieces (not a real state)
     //This is used for testing piece graphics
     public void emptyGame() {
+	
+		//Clear the board
         for(int i=0 ; i< _board.length ; i++){
             _board[i] = 0;
         }
+		
+		//Clear the jails
+		_outblack = 0;
+		_outwhite = 0;
     }
 
     public Player getCurrentPlayer() {
@@ -91,6 +97,24 @@ public class gameBoard {
         _board[18] = -5;
         _board[23] = 2;
     }
+	
+	//This method is for setting up very specific game scenarios for testing
+	public void setTestGame(int i) {
+		//Firstly clear the game.
+		emptyGame();
+	
+		switch(i) {
+			//Puts black and white next to each other to easily jail the other piece.
+			case 1:
+			
+				_board[0] = -1;
+				_board[1] = 1;
+				_board[12] = -1;
+				_board[14] = 1;
+			
+			break;
+		}
+	}
     
 	private String printMoveString(boolean b) {
 		if(b)
@@ -152,55 +176,80 @@ public class gameBoard {
         }
     }
 
-    public int unjailPiece(int iRoll, boolean bWhite) {
+    public int unjailPiece(int iRoll, Player player) {
 
         int iDst;
-        iDst = ( bWhite == true ? iRoll-1 : (24-iRoll));
+
+        //Which player?
+        boolean bBlack = false;
+        if(player == Player.BLACK)
+            bBlack = true;
+        else  if(player == Player.WHITE)
+            bBlack = false;
+
+        iDst = ( bBlack == true ? iRoll-1 : (24-iRoll));
 
         //Free?             OR      Same side add
-        if( (_board[iDst] == 0) || (bWhite && _board[iDst] < 0) ) {
-            System.out.println("Freedom!");
-            if(bWhite) {
+        if( (_board[iDst] == 0) || (bBlack && _board[iDst] < 0) ) {
+            //System.out.println("Freedom!");
+            if(bBlack) {
                 _board[iDst]--;
-                _outwhite--;
+                _outblack--;
             }
             else {
                 _board[iDst]++;
-                _outblack--;
+                _outwhite--;
             }
         }
         //Same team add
-        else if(bWhite ^ _board[iDst] < 0) {
-            System.out.print("Opposite side unjail - ");
+        else if(bBlack ^ _board[iDst] < 0) {
+            //System.out.print("Opposite side unjail - ");
             //Jail the enemy!
             if(Math.abs(_board[iDst]) == 1) {
-                System.out.println(" Counterjail!");
-                if(bWhite) {
+                //System.out.println(" Counterjail!");
+                if(bBlack) {
                     _board[iDst]-=2;
                     _outwhite--;
                     _outblack++;
                 }
                 else {
                     _board[iDst]+=2;
-                    _outblack--;
-                    _outwhite++;
+                    _outwhite--;
+                    _outblack++;
                 }
             }
             //Can't move here, blocked
             else {
-                System.out.println(" Blocked. Try again.");
+                //System.out.println(" Blocked. Try again.");
                 return -1;
             }
         }
 
-        return 0;
+        return 1;
+    }
+    public int unjailPiece(int iRoll) {
+        return unjailPiece(iRoll, _current);
     }
 
     public int getPiecesInColumn(int i){
         return _board[i];
     }
+	
+	//How many pieces does this player have in jail?
+	public int getPiecesInJail(Player p){
+		if(p == Player.BLACK)
+			return _outblack;
+		else if(p == Player.WHITE)
+			return _outwhite;
+			
+		return -1;
+	}
+	//Assume Current player if none passed
+	public int getPiecesInJail(){
+		return getPiecesInJail(_current);
+	}
 
-    //Gets all the avaliable pieces to the current player.
+    //Gets all the available pieces to the current player.
     public List<String> getColumnsWithPieces(){
 
         List<String> list = new ArrayList<>();
@@ -286,7 +335,7 @@ public class gameBoard {
 
         //Where is this going?
         int iDst;                   //Black move up    //White move down
-		iDst = (_board[iSrc] < -1) ? (iSrc + iCount) : (iSrc - iCount);
+		iDst = (_board[iSrc] < 0) ? (iSrc + iCount) : (iSrc - iCount);
 
         //Are these in bounds?
         if(iSrc < 0 || iDst < 0 || iSrc >= 24 || iDst >= 24) {
@@ -296,12 +345,12 @@ public class gameBoard {
         //Do we have a piece to move?
         else if(_board[iSrc] == 0) {
             //System.out.println("No source piece!");
-            return -1;
+            return -2;
         }
 		//Is the destination the SAME as the source?
 		else if(iDst == iSrc){
 	        //System.out.println("Can't move back into the same spot");
-            return -2;
+            return -3;
 		}
         //Is the space free?
         else if(_board[iDst] == 0) {
@@ -332,20 +381,21 @@ public class gameBoard {
 			//System.out.println(" jailed!");
 			
 			//Testing Only
+
 			if(bTest)
 				return 0;		
 			
 			if (_board[iDst] < 0)
-				_outwhite++;
-			else
 				_outblack++;
+			else
+				_outwhite++;
 			
 			_move(iSrc, iDst);
 			return 1;
             }
 
             //System.out.println(" blocked! Try again.");
-            return -1;
+            return -4;
         }
         return 1;
     }
