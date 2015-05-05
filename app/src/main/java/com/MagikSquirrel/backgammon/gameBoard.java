@@ -409,7 +409,7 @@ public class gameBoard {
 	}
 
     //If the player has no pieces left on the board they win!
-    public boolean winGame() {
+    public boolean isGameWon() {
 
         if(_current == Player.BLACK) {
 

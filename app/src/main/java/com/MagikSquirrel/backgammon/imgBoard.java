@@ -1,9 +1,12 @@
 package com.MagikSquirrel.backgammon;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -15,13 +18,11 @@ import android.widget.TextView;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by prusek on 4/30/2015.
- */
 public class imgBoard {
 
     private Context _mContext;
     private Resources _rResources;
+    private DisplayMetrics _dmDisplay;
     private TableLayout _tlBoard;
 	private TextView _tvPlayer;
 	private TextView _tvJail;
@@ -38,13 +39,19 @@ public class imgBoard {
     private Bitmap bmWhite;
     private Bitmap bmClear;
 
+
+
     //Constructor
-    imgBoard(Context Context, Resources Resources, TableLayout Board, TextView Player, TextView Jail)  {
+    imgBoard(Context Context, Resources Resources, Display Display, TableLayout Board, TextView Player, TextView Jail)  {
         _mContext = Context;
         _rResources = Resources;
         _tlBoard = Board;
 		_tvPlayer = Player;
 		_tvJail = Jail;
+
+        //Get the screen resolution.
+        _dmDisplay = new DisplayMetrics();
+        Display.getMetrics(_dmDisplay);
 
         //Initialize the board...
         initBoard();
@@ -117,38 +124,39 @@ public class imgBoard {
         //This is what will hold the 2da for image views
         imgBoard = new ImageView[24][8];
 
-        //Set the two Bitmaps which will be used heavily
+        //Get the screen spacing variables
+        imgResolution iRes = new imgResolution(_dmDisplay.widthPixels, _dmDisplay.heightPixels);
+
+        //Set the 3 Bitmaps which will be used heavily
         bmBlack = BitmapFactory.decodeResource(_rResources, R.drawable.black);
         bmWhite = BitmapFactory.decodeResource(_rResources, R.drawable.red);
         bmClear = BitmapFactory.decodeResource(_rResources, R.drawable.empty);
 
-        bmBlack = Bitmap.createScaledBitmap(bmBlack, 50, 50, true);
-        bmWhite = Bitmap.createScaledBitmap(bmWhite, 50, 50, true);
-        bmClear = Bitmap.createScaledBitmap(bmClear, 50, 50, true);
-
-        //Left Right Border Pixels
-        Bitmap bmLR = BitmapFactory.decodeResource(_rResources, R.drawable.empty);//R.drawable.green);
-        bmLR = Bitmap.createScaledBitmap(bmLR, 39, 5, true);
+        bmBlack = Bitmap.createScaledBitmap(bmBlack, iRes._piece, iRes._piece, true);
+        bmWhite = Bitmap.createScaledBitmap(bmWhite, iRes._piece, iRes._piece, true);
+        bmClear = Bitmap.createScaledBitmap(bmClear, iRes._piece, iRes._piece, true);
 
         //Top Down Border Pixels
-        Bitmap bmTD = BitmapFactory.decodeResource(_rResources, R.drawable.empty);//R.drawable.orange);
-        bmTD = Bitmap.createScaledBitmap(bmTD, 5, 30, true);
+        Bitmap bmTD = BitmapFactory.decodeResource(_rResources, R.drawable.empty); //R.dawable.orange);
+        bmTD = Bitmap.createScaledBitmap(bmTD, iRes._misc, iRes._edgetd, true);
 
-        //Middle (Between Top and Bottom) Border Pixels
-        Bitmap bmMidTB = BitmapFactory.decodeResource(_rResources, R.drawable.empty);//R.drawable.orange);
-        bmMidTB = Bitmap.createScaledBitmap(bmMidTB, 5, 12, true);
+        //Left Right Border Pixels
+        Bitmap bmLR = BitmapFactory.decodeResource(_rResources, R.drawable.empty); //R.dawable.green);
+        bmLR = Bitmap.createScaledBitmap(bmLR, iRes._edgelr, iRes._misc, false);
+
+        //Middle (Between Top and Down) Border Pixels
+        Bitmap bmMidTD = BitmapFactory.decodeResource(_rResources, R.drawable.empty); //R.dawable.yellow);
+        bmMidTD = Bitmap.createScaledBitmap(bmMidTD, iRes._misc, iRes._midtd/*this one*/, true);
 
         //Middle (Between Left and Right) Border Pixels
-        Bitmap bmMidLR = BitmapFactory.decodeResource(_rResources, R.drawable.empty);//R.drawable.green);
-        bmMidLR = Bitmap.createScaledBitmap(bmMidLR, 23, 5, true);
+        Bitmap bmMidLR = BitmapFactory.decodeResource(_rResources, R.drawable.empty); //R.dawable.grey);
+        bmMidLR = Bitmap.createScaledBitmap(bmMidLR, iRes._midlr, iRes._misc, true);
 
         //Middle (Between Left and Right) Border Pixels
-        Bitmap bmDivider = BitmapFactory.decodeResource(_rResources, R.drawable.empty);//R.drawable.green);
-        bmDivider = Bitmap.createScaledBitmap(bmDivider, 30, 5, true);
+        Bitmap bmDivider = BitmapFactory.decodeResource(_rResources, R.drawable.empty); //R.dawable.pink);
+        bmDivider = Bitmap.createScaledBitmap(bmDivider, iRes._divider, iRes._misc, true);
 
         //Now we build the table
-        TableLayout tlBoard = (TableLayout) _tlBoard;
-
         for (int iRow = 0; iRow < 5; iRow++) {
             TableRow tr = new TableRow(_mContext);
 
@@ -161,7 +169,7 @@ public class imgBoard {
             //Middle Break
             else if (iRow == 2) {
                 ImageView iv = new ImageView(_mContext);
-                iv.setImageBitmap(bmMidTB);
+                iv.setImageBitmap(bmMidTD);
                 tr.addView(iv);
             }
             //Innerboard
@@ -230,7 +238,7 @@ public class imgBoard {
                 }
             }
 
-            tlBoard.addView(tr);
+            _tlBoard.addView(tr);
         }
 
         //Now we just hide those pieces.

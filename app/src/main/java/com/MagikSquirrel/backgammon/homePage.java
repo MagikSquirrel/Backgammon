@@ -1,27 +1,25 @@
 package com.MagikSquirrel.backgammon;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.Layout;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.util.AbstractList;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class homePage extends ActionBarActivity {
 
@@ -37,10 +35,12 @@ public class homePage extends ActionBarActivity {
         //Draw the first one
         mContext = getApplicationContext();
 
+
         //Create the internal game gameBoard
         gameBoard = new gameBoard();
         imgBoard = new imgBoard(mContext,
                             getResources(),
+                            (Display) getWindowManager().getDefaultDisplay(),
                             (TableLayout) findViewById(R.id.tlBoard),
                             (TextView) findViewById(R.id.tvPlayer),
 							(TextView) findViewById(R.id.tvJail)
@@ -73,13 +73,18 @@ public class homePage extends ActionBarActivity {
                 cbDie1.setEnabled(true);
                 cbDie2.setEnabled(true);
 
-                Button bMove = (Button) findViewById(R.id.bMove);
-                bMove.setEnabled(true);
+                //Disable number picker
+                npDie1.setEnabled(false);
+                npDie2.setEnabled(false);
+
+                //Enable Roll
+                Button btnRoll = (Button) findViewById(R.id.bRoll);
+                btnRoll.setEnabled(true);
             }
         });
 
         //MOVE BUTTON
-        Button btnMove = (Button) findViewById(R.id.bMove);
+        final Button btnMove = (Button) findViewById(R.id.bMove);
         btnMove.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -131,8 +136,11 @@ public class homePage extends ActionBarActivity {
                     }
 
                     //Was that a winner?
-                    if(gameBoard.winGame()) {
+                    if(gameBoard.isGameWon()) {
                         Toast.makeText(mContext, gameBoard.getCurrentPlayer().toString()+" wins!", Toast.LENGTH_LONG).show();
+                        cbDie1.setEnabled(false);
+                        cbDie2.setEnabled(false);
+                        btnMove.setEnabled(false);
                     }
 
                     //If both dies are disabled, switch player and re-enable.
@@ -140,9 +148,12 @@ public class homePage extends ActionBarActivity {
                         cbDie1.setEnabled(true);
                         cbDie2.setEnabled(true);
                         gameBoard.swapCurrentPlayer();
-                    }
 
-				
+                        //Enable roll, disable move
+                        Button btnRoll = (Button) findViewById(R.id.bRoll);
+                        btnRoll.setEnabled(true);
+                        btnMove.setEnabled(false);
+                    }
 				}
 
                 //Redraw the board
@@ -216,6 +227,31 @@ public class homePage extends ActionBarActivity {
 
                 Button bMove = (Button) findViewById(R.id.bMove);
                 bMove.setEnabled(true);
+            }
+        });
+
+        //ROLL DICE BUTTON
+        final Button btnRoll = (Button) findViewById(R.id.bRoll);
+        btnRoll.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+
+            Random r = new Random();
+
+            //Get random in range of their default min/max vals
+            int i1 = r.nextInt(npDie1.getMaxValue() - npDie1.getMinValue() + 1) + npDie1.getMinValue();
+            int i2 = r.nextInt(npDie2.getMaxValue() - npDie2.getMinValue() + 1) + npDie2.getMinValue();
+
+            //Set to that
+            npDie1.setValue(i1);
+            npDie2.setValue(i2);
+
+            //You can only roll once man.
+            btnRoll.setEnabled(false);
+
+            //Enable Mover.
+            Button btnMove = (Button) findViewById(R.id.bMove);
+            btnMove.setEnabled(true);
             }
         });
 

@@ -54,31 +54,29 @@
                 android:visibility="invisible" />
 
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:text="2"
                 android:id="@+id/bDebug"
-                android:singleLine="false" />
+                android:singleLine="false"
+                android:visibility="invisible" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Roll"
+                android:id="@+id/bRoll" />
 
         </LinearLayout>
 
-        <GridLayout
+        <TableLayout
             android:layout_width="fill_parent"
             android:layout_height="290dp"
-            android:id="@+id/glBoard"
-            android:focusableInTouchMode="true"
-            android:background="@drawable/board"
-            android:columnCount="7"
-            android:rowCount="7">
+            android:id="@+id/tlBoard"
+            android:gravity="center"
+            android:background="@drawable/board">
 
-            <TableLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tlBoard">
-
-            </TableLayout>
-
-        </GridLayout>
+        </TableLayout>
 
         <GridLayout
             android:orientation="horizontal"
