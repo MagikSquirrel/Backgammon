@@ -26,6 +26,8 @@ public class homePage extends ActionBarActivity {
     private Context mContext;
     private gameBoard gameBoard;
     private imgBoard imgBoard;
+	private boolean bDoubles1;
+	private boolean bDoubles2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,32 +109,43 @@ public class homePage extends ActionBarActivity {
                 }
 
                 //Dealing with a jailing?
-                int iMove = -1;
+                gameBoard.MoveMsg mMsg = com.MagikSquirrel.backgammon.gameBoard.MoveMsg.INVALID;
                 if(iSrc == -1){
-                    iMove = gameBoard.unjailPiece(iCount);
-                    Toast.makeText(mContext, "Unjailing was a :"+Integer.toString(iMove), Toast.LENGTH_SHORT).show();
+                    mMsg = gameBoard.unjailPiece(iCount);
+                    Toast.makeText(mContext, "Unjailing was a :"+mMsg.toString(), Toast.LENGTH_SHORT).show();
                 }
                 //Normal Movement
                 else {
 
                     //Move the piece
-                    iMove = gameBoard.movePiece(iSrc, iCount, false);
-                    //Toast.makeText(mContext, "Move was a :" + Integer.toString(iMove), Toast.LENGTH_SHORT).show();
+                    mMsg = gameBoard.movePiece(iSrc, iCount, false);
                 }
 				
                 //Was the move successful?
-                if(iMove == 1) {
+                if(mMsg == com.MagikSquirrel.backgammon.gameBoard.MoveMsg.VALID_COMPLETE) {
 
                     //Exhaust the use of Die1.
                     if (cbDie1.isChecked()) {
-                        cbDie1.setChecked(false);
-                        cbDie1.setEnabled(false);
+					
+						//Was this a double?
+						if(bDoubles1)
+							bDoubles1 = false;
+						else {					
+							cbDie1.setChecked(false);
+							cbDie1.setEnabled(false);
+						}
                     }
 
                     //Exhaust the use of Die2.
                     if (cbDie2.isChecked()) {
-                        cbDie2.setChecked(false);
-                        cbDie2.setEnabled(false);
+					
+						//Was this a double?
+						if(bDoubles2)
+                            bDoubles2 = false;
+						else {
+							cbDie2.setChecked(false);
+							cbDie2.setEnabled(false);
+						}
                     }
 
                     //Was that a winner?
@@ -154,6 +167,10 @@ public class homePage extends ActionBarActivity {
                         btnRoll.setEnabled(true);
                         btnMove.setEnabled(false);
                     }
+				}
+				//Couldn't move there, let's say why.
+				else {
+					Toast.makeText(mContext, "Can't move there: "+mMsg.toString(), Toast.LENGTH_LONG).show();
 				}
 
                 //Redraw the board
@@ -241,15 +258,22 @@ public class homePage extends ActionBarActivity {
             //Get random in range of their default min/max vals
             int i1 = r.nextInt(npDie1.getMaxValue() - npDie1.getMinValue() + 1) + npDie1.getMinValue();
             int i2 = r.nextInt(npDie2.getMaxValue() - npDie2.getMinValue() + 1) + npDie2.getMinValue();
+			
+			//Doubles!
+			if(i1 == i2) {
+				bDoubles1 = true;
+				bDoubles2 = true;
+				Toast.makeText(mContext, gameBoard.getCurrentPlayer().toString()+" rolled doubles!", Toast.LENGTH_SHORT).show();
+			}			
 
-            //Set to that
+            //Set the Number Pickers to those
             npDie1.setValue(i1);
             npDie2.setValue(i2);
 
             //You can only roll once man.
             btnRoll.setEnabled(false);
 
-            //Enable Mover.
+            //Enable Mover button.
             Button btnMove = (Button) findViewById(R.id.bMove);
             btnMove.setEnabled(true);
             }

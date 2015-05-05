@@ -23,12 +23,12 @@ public class imgResolution {
 
 
         //Nexus 4
-        else if(Width == 1 && Height == 1) {
+        else if(Width == 1080 && Height == 1776) {
             _piece = 50;
             _edgetd = 30;
             _edgelr = 39;
-            _midtd = 23;
-            _midlr = 12;
+            _midtd = 12;
+            _midlr = 23;
             _divider = 30;
         }
 

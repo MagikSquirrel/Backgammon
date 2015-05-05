@@ -15,18 +15,22 @@ public class gameBoard {
 
     public static enum Player
     {
-        BLACK {
-            public String toString() {
-                return "Black";
-            }
-        },
-        WHITE{
-            public String toString() {
-                return "White";
-            }
-        },
+        BLACK  { public String toString() { return "Black"; } },
+        WHITE { public String toString() { return "White"; } },
         NULL
     }
+	
+	//Various states for a reason a move does or doesn't work
+	public static enum MoveMsg
+	{
+		VALID_COMPLETE { public String toString() { return "Valid"; } },
+		VALID_TEST { public String toString() { return "Valid (Test)"; } },
+		OUT_OF_BOUNDS { public String toString() { return "Out of Bounds"; } },
+		NO_SOURCE { public String toString() { return "No Source Piece"; } },
+        SAME_SPOT { public String toString() { return "Move into Same Spot"; } },
+        BLOCKED	 { public String toString() { return "Blocked by Enemy"; } },
+        INVALID	 { public String toString() { return "UNKNOWN STATE"; } }
+	}
 
     private String _log = "";
 
@@ -199,7 +203,7 @@ public class gameBoard {
         }
     }
 
-    public int unjailPiece(int iRoll, Player player) {
+    public MoveMsg unjailPiece(int iRoll, Player player) {
 
         int iDst;
 
@@ -244,13 +248,13 @@ public class gameBoard {
             //Can't move here, blocked
             else {
                 //System.out.println(" Blocked. Try again.");
-                return -1;
+                return MoveMsg.BLOCKED;
             }
         }
 
-        return 1;
+        return MoveMsg.VALID_COMPLETE;
     }
-    public int unjailPiece(int iRoll) {
+    public MoveMsg unjailPiece(int iRoll) {
         return unjailPiece(iRoll, _current);
     }
 
@@ -291,7 +295,7 @@ public class gameBoard {
     //Can this player "Bear off" (Where all pieces are in their home arena)
     public boolean canBearOff(Player player) {
 
-        int iHomeSize = 6; //How many "points" constitue the home arena.
+        int iHomeSize = 6; //How many "points" constitute the home arena.
 
         //Any jailed pieces means we can't bear Off
         if(getPiecesInJail(player) != 0)
@@ -394,7 +398,7 @@ public class gameBoard {
 		
 			int iCount = (i - iSrc);
 	
-			if(movePiece(iSrc, iCount, true) == 0) {
+			if(movePiece(iSrc, iCount, true) == MoveMsg.VALID_TEST) {
 				//System.out.println("We can move from "+Integer.toString(iSrc)+" to "+Integer.toString(i));
 				bReturn[i] = true;
 			}
@@ -435,7 +439,7 @@ public class gameBoard {
         return true;
     }
 	
-	public int movePiece(int iSrc, int iCount, boolean bTest) {
+	public MoveMsg movePiece(int iSrc, int iCount, boolean bTest) {
 
         //Where is this going?
         int iDst;                   //Black move up    //White move down
@@ -452,27 +456,23 @@ public class gameBoard {
         }
         //Are these reverse moves?
         else if(iSrc < 0 || iDst < 0 || iSrc >= 24 || iDst >= 24) {
-            //System.out.println("Out of bounds move!");
-            return -1;
+            return MoveMsg.OUT_OF_BOUNDS;
         }
         //Do we have a piece to move?
         else if(_board[iSrc] == 0) {
-            //System.out.println("No source piece!");
-            return -2;
+            return MoveMsg.NO_SOURCE;
         }
 		//Is the destination the SAME as the source?
 		else if(iDst == iSrc){
-	        //System.out.println("Can't move back into the same spot");
-            return -3;
+            return MoveMsg.SAME_SPOT;
 		}
         //Is the space free?
         else if(_board[iDst] == 0) {
 		
 			//Testing Only
 			if(bTest)
-				return 0;
-		
-            //System.out.println("No Team!");
+				return MoveMsg.VALID_TEST;
+
             _move(iSrc, iDst);
         }
         //Is the dest the same team as source?
@@ -481,7 +481,7 @@ public class gameBoard {
 
 			//Testing Only
 			if(bTest)
-				return 0;
+                return MoveMsg.VALID_TEST;
 			//Actual Move
 			else			
 				_move(iSrc, iDst);
@@ -492,11 +492,8 @@ public class gameBoard {
             if(Math.abs(_board[iDst]) <= 1) {
 			
                 //System.out.println(" jailed!");
-
-                //Testing Only
-
                 if(bTest)
-                    return 0;
+                    return MoveMsg.VALID_TEST;
 
                 if (_board[iDst] < 0)
                     _outblack++;
@@ -504,12 +501,12 @@ public class gameBoard {
                     _outwhite++;
 
                 _move(iSrc, iDst);
-                return 1;
+                return MoveMsg.VALID_COMPLETE;
             }
 
             //System.out.println(" blocked! Try again.");
-            return -4;
+            return MoveMsg.BLOCKED;
         }
-        return 1;
+        return MoveMsg.VALID_COMPLETE;
     }
 }
