@@ -140,6 +140,22 @@ public class gameBoard {
                 _board[22] = -1;
 
             break;
+
+            //Setups red to win, black to loose. Testing piece adjustment on bearoff phase.
+            case 3:
+
+                _board[2] = 1;
+                _board[3] = 1;
+                _board[4] = 2;
+                _board[5] = 3;
+                _board[18] = -6;
+                _board[19] = -5;
+                _board[20] = -1;
+                _board[21] = -1;
+                _board[22] = -2;
+                _board[23] = -2;
+
+                break;
 		}
 	}
     
@@ -447,12 +463,16 @@ public class gameBoard {
 
         //Are these "Bearing Off?"   BLACK going beyond 24 WHITE going beyond 0
         if(canBearOff() && ((_board[iSrc] < 0 && iDst >= 24) || (_board[iSrc] > 0 && iDst < 0)) ) {
-            if(_board[iSrc] < 0)
+            if(_board[iSrc] < 0) {
                 _bearblack++;
-            if(_board[iSrc] > 0)
+                _board[iSrc]++;
+            }
+            else if(_board[iSrc] > 0) {
                 _bearwhite++;
-
-            _board[iSrc]--;
+                _board[iSrc]--;
+            }
+            else
+                return MoveMsg.INVALID;
         }
         //Are these reverse moves?
         else if(iSrc < 0 || iDst < 0 || iSrc >= 24 || iDst >= 24) {

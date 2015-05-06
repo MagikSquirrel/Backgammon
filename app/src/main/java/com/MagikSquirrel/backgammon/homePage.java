@@ -67,7 +67,7 @@ public class homePage extends ActionBarActivity {
 
                 //Give black a go
                 Spinner sSpin = (Spinner) findViewById(R.id.sSource);
-                imgBoard.updateSpinnerChoices(gameBoard, sSpin, android.R.layout.simple_spinner_item);
+                imgBoard.updateSpinnerChoices(gameBoard, sSpin, R.layout.spinner_item);
 
                 //Enable check-boxes
                 CheckBox cbDie1 = (CheckBox) findViewById(R.id.cbDie1);
@@ -175,7 +175,7 @@ public class homePage extends ActionBarActivity {
 
                 //Redraw the board
                 imgBoard.redrawBoard(gameBoard);
-                imgBoard.updateSpinnerChoices(gameBoard, sSpin, android.R.layout.simple_spinner_item);
+                imgBoard.updateSpinnerChoices(gameBoard, sSpin, R.layout.spinner_item);
             }
         });
 
@@ -223,8 +223,9 @@ public class homePage extends ActionBarActivity {
                 List<String> lsSources = new ArrayList<String>();
                 for(int i=0 ; i<=24 ; i++)
                     lsSources.add(Integer.toString(i));
+                
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
-                        android.R.layout.simple_spinner_item, lsSources);
+                        R.layout.spinner_item, lsSources);
                 sSpin.setAdapter(adapter);
 
             }
@@ -240,7 +241,7 @@ public class homePage extends ActionBarActivity {
                 imgBoard.redrawBoard(gameBoard);
 
                 Spinner sSpin = (Spinner) findViewById(R.id.sSource);
-                imgBoard.updateSpinnerChoices(gameBoard, sSpin, android.R.layout.simple_spinner_item);
+                imgBoard.updateSpinnerChoices(gameBoard, sSpin, R.layout.spinner_item);
 
                 Button bMove = (Button) findViewById(R.id.bMove);
                 bMove.setEnabled(true);
