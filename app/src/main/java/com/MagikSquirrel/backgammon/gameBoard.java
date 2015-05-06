@@ -1,18 +1,20 @@
 package com.MagikSquirrel.backgammon;
 
-//import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class gameBoard {
+
+	//FIELDS
     private int[] _board;
     private int _outblack; //Pieces that have been jailed
     private int _outwhite;
     private int _bearblack; //Pieces that have been "beared off"
     private int _bearwhite; //Pieces that have been "beared off"
     private Player _current;
+	private String _log = "";
 
+	//ENUMS
     public static enum Player
     {
         BLACK  { public String toString() { return "Black"; } },
@@ -30,12 +32,11 @@ public class gameBoard {
         SAME_SPOT { public String toString() { return "Move into Same Spot"; } },
         BLOCKED	 { public String toString() { return "Blocked by Enemy"; } },
         INVALID	 { public String toString() { return "UNKNOWN STATE"; } }
-	}
+	}    
 
-    private String _log = "";
-
-    //Constructor
+    //CONSTRUCTOR
     gameBoard() {
+	
         _board = new int[24];
         _outblack = 0;
         _outwhite = 0;
@@ -47,7 +48,22 @@ public class gameBoard {
             _board[i] = 0;
         }
     }
+	
+	//PROPERTIES
+	public Player getCurrentPlayer() {
+        return _current;
+    }
+	
+    public int getPiecesInColumn(int i){
+        return _board[i];
+    }
+	
+    //Assume Current player if none passed
+    public int getPiecesBearedOff(){
+        return getPiecesBearedOff(_current);
+    }	
 
+	//METHODS - Full Game Settings
     //This fills the gameboard with pieces (not a real state)
     //This is used for testing piece graphics
     public void fullGame() {
@@ -68,22 +84,6 @@ public class gameBoard {
 		//Clear the jails
 		_outblack = 0;
 		_outwhite = 0;
-    }
-
-    public Player getCurrentPlayer() {
-        return _current;
-    }
-
-    public void swapCurrentPlayer() {
-        if(_current == Player.BLACK){
-            _current = Player.WHITE;
-        }
-        else if(_current == Player.WHITE){
-            _current = Player.BLACK;
-        }
-        else
-            _current = Player.BLACK;
-
     }
 
     //Setup New game by placing pieces where they should
@@ -156,9 +156,31 @@ public class gameBoard {
                 _board[23] = -2;
 
                 break;
+				
+            //Incrementing piece counts to test pieces able to be shown.
+            case 4:
+			
+				//White side 0-11
+				for(int j=0 ; j<=11 ; j++) {
+					_board[j] = j+4; //4 - 15 pieces
+				}
+				
+				//Black side 12-23
+				for(int j=12 ; j<=23 ; j++) {
+					_board[j] = -(j-8); //2 - 15 pieces
+				}
+
+                break;
+
+            //Full game
+            case 5:
+                fullGame();
+
+            break;				
 		}
 	}
-    
+	
+	//METHODS - Printing
 	private String printMoveString(boolean b) {
 		if(b)
 			return "X";
@@ -202,9 +224,68 @@ public class gameBoard {
 
         System.out.println(sTop + "\n" + sBot);
         System.out.println("Out: Black ("+_outblack+") White ("+_outwhite+")\n");
-    }
+    }	
+	
+	//METHODS - Board Management
+    public void swapCurrentPlayer() {
+        if(_current == Player.BLACK){
+            _current = Player.WHITE;
+        }
+        else if(_current == Player.WHITE){
+            _current = Player.BLACK;
+        }
+        else
+            _current = Player.BLACK;
 
-    //Internal code to move pieces easily.
+    }
+	
+    //If the player has no pieces left on the board they win!
+    public boolean isGameWon() {
+
+        if(_current == Player.BLACK) {
+
+            for(int i=0; i<=_board.length-1 ; i++) {
+
+                //Piece found, Black didn't win yet!
+                if(_board[i] < 0)
+                    return false;
+            }
+        }
+
+        //White all pieces are 6-
+        else if(_current == Player.WHITE) {
+
+            for (int i = 0; i <= _board.length - 1; i++) {
+
+                //Piece found, White didn't win yet!
+                if (_board[i] > 0)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+	
+    //Gets all the available pieces to the current player.
+    public List<String> getColumnsWithPieces(){
+
+        List<String> list = new ArrayList<>();
+        for(int i=0 ; i<_board.length ; i++){
+
+            //Black team
+            if(_current == Player.BLACK && _board[i] < 0)
+                list.add(Integer.toString(i));
+
+            //Black team
+            if(_current == Player.WHITE && _board[i] > 0)
+                list.add(Integer.toString(i));
+        }
+
+        return list;
+    }	
+
+    //METHODS - Piece Movement	
+	//Internal code to move pieces easily.
     private void _move(int iSrc, int iDst) {
 
         //Get the side of the source
@@ -219,7 +300,20 @@ public class gameBoard {
         }
     }
 
-    public MoveMsg unjailPiece(int iRoll, Player player) {
+    //How many pieces does this player have in jail?
+    public int getPiecesInJail(Player p){
+        if(p == Player.BLACK)
+            return _outblack;
+        else if(p == Player.WHITE)
+            return _outwhite;
+
+        return -1;
+    }
+    public int getPiecesInJail(){
+        return getPiecesInJail(_current);
+    }    
+	
+	public MoveMsg unjailPiece(int iRoll, Player player) {
 
         int iDst;
 
@@ -274,25 +368,6 @@ public class gameBoard {
         return unjailPiece(iRoll, _current);
     }
 
-    public int getPiecesInColumn(int i){
-        return _board[i];
-    }
-
-    //How many pieces does this player have in jail?
-    public int getPiecesInJail(Player p){
-        if(p == Player.BLACK)
-            return _outblack;
-        else if(p == Player.WHITE)
-            return _outwhite;
-
-        return -1;
-    }
-
-    //Assume Current player if none passed
-    public int getPiecesInJail(){
-        return getPiecesInJail(_current);
-    }
-
     //How many pieces does this player have beared off
     public int getPiecesBearedOff(Player p){
         if(p == Player.BLACK)
@@ -301,11 +376,6 @@ public class gameBoard {
             return _bearblack;
 
         return -1;
-    }
-
-    //Assume Current player if none passed
-    public int getPiecesBearedOff(){
-        return getPiecesBearedOff(_current);
     }
 
     //Can this player "Bear off" (Where all pieces are in their home arena)
@@ -345,28 +415,6 @@ public class gameBoard {
     public boolean canBearOff() {
         return canBearOff(_current);
     }
-
-    //Gets all the available pieces to the current player.
-    public List<String> getColumnsWithPieces(){
-
-        List<String> list = new ArrayList<>();
-        for(int i=0 ; i<_board.length ; i++){
-
-            //Black team
-            if(_current == Player.BLACK && _board[i] < 0)
-                list.add(Integer.toString(i));
-
-            //Black team
-            if(_current == Player.WHITE && _board[i] > 0)
-                list.add(Integer.toString(i));
-        }
-
-        return list;
-    }
-
-    public int[] getCount(){
-        return _board;
-    }
 	
 	//Returns all the destination columns allowed WITH the dice restrictions
 	public boolean[] getAllowedMoves(int iSrc, int iDie1, int iDie2) {
@@ -402,8 +450,7 @@ public class gameBoard {
 		}
 		
 		return bMoves;
-	}
-	
+	}	
 	//Returns all the destination columns allowed
 	public boolean[] getAllowedMoves(int iSrc) {
 	
@@ -427,33 +474,6 @@ public class gameBoard {
 		
 		return bReturn;
 	}
-
-    //If the player has no pieces left on the board they win!
-    public boolean isGameWon() {
-
-        if(_current == Player.BLACK) {
-
-            for(int i=0; i<=_board.length-1 ; i++) {
-
-                //Piece found, Black didn't win yet!
-                if(_board[i] < 0)
-                    return false;
-            }
-        }
-
-        //White all pieces are 6-
-        else if(_current == Player.WHITE) {
-
-            for (int i = 0; i <= _board.length - 1; i++) {
-
-                //Piece found, White didn't win yet!
-                if (_board[i] > 0)
-                    return false;
-            }
-        }
-
-        return true;
-    }
 	
 	public MoveMsg movePiece(int iSrc, int iCount, boolean bTest) {
 

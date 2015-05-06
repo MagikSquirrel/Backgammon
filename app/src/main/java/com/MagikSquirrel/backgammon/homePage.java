@@ -193,17 +193,6 @@ public class homePage extends ActionBarActivity {
             }
         });
 
-        //DISPLAY ALL BUTTON
-        Button btnDisplayAll = (Button) findViewById(R.id.bDisplayAll);
-        btnDisplayAll.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-
-                gameBoard.fullGame();
-                imgBoard.redrawBoard(gameBoard);
-            }
-        });
-
         //REFRESH BUTTON
         Button btnRefresh = (Button) findViewById(R.id.bRefresh);
         btnRefresh.setOnClickListener(new View.OnClickListener(){
