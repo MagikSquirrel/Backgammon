@@ -12,7 +12,8 @@ public class imgResolution {
     imgResolution(int Width, int Height) {
 
         //LG G3
-        if(Width == 1440 && Height == 2368){
+        if ((Width == 1440 && Height == 2368) ||
+        (Width == 1440 && Height == 2392)){
             _piece = 68;
             _edgetd = 32;
             _edgelr = 46;
