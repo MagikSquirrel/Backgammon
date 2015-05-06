@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -33,8 +34,10 @@ public class imgBoard {
 	
 	private Bitmap bmBlack;
     private Bitmap bmWhite;
-	private Bitmap bmBlack2;
-    private Bitmap bmWhite2;	
+    private Bitmap bmBlack2;
+    private Bitmap bmWhite2;
+    private Bitmap bmBlackPick;
+    private Bitmap bmWhitePick;
     private Bitmap bmClear;
 
     //CONSTRUCTOR
@@ -48,33 +51,46 @@ public class imgBoard {
         //Get the screen resolution.
         _dmDisplay = new DisplayMetrics();
         Display.getMetrics(_dmDisplay);
+        imgResolution iRes = new imgResolution(_dmDisplay.widthPixels, _dmDisplay.heightPixels);		
+		
+		//Initialize the bitmaps
+		initBitmaps(iRes);
 
         //Initialize the board...
-        initBoard();
+        initBoard(iRes);
     }
+	
+	//Initializes the Bitmaps that will be used repeatedly.
+	private void initBitmaps(imgResolution iRes) {	
+	
+        bmBlack = BitmapFactory.decodeResource(_rResources, R.drawable.black);
+        bmBlack = Bitmap.createScaledBitmap(bmBlack, iRes._piece, iRes._piece, true);
+
+        bmWhite = BitmapFactory.decodeResource(_rResources, R.drawable.red);
+        bmWhite = Bitmap.createScaledBitmap(bmWhite, iRes._piece, iRes._piece, true);
+
+        bmBlack2 = BitmapFactory.decodeResource(_rResources, R.drawable.black2);
+        bmBlack2 = Bitmap.createScaledBitmap(bmBlack2, iRes._piece, iRes._piece, true);
+
+        bmWhite2 = BitmapFactory.decodeResource(_rResources, R.drawable.red2);
+        bmWhite2 = Bitmap.createScaledBitmap(bmWhite2, iRes._piece, iRes._piece, true);
+
+        bmBlackPick = BitmapFactory.decodeResource(_rResources, R.drawable.blackpick);
+        bmBlackPick = Bitmap.createScaledBitmap(bmBlackPick, iRes._piece, iRes._piece, true);
+
+        bmWhitePick = BitmapFactory.decodeResource(_rResources, R.drawable.redpick);
+        bmWhitePick = Bitmap.createScaledBitmap(bmWhitePick, iRes._piece, iRes._piece, true);
+
+        bmClear = BitmapFactory.decodeResource(_rResources, R.drawable.empty);
+        bmClear = Bitmap.createScaledBitmap(bmClear, iRes._piece, iRes._piece, true);	
+	}
 
     //This initializes the gameBoard, and all the game pieces
     //It spaces out the columns and rows appropriately.
-    private void initBoard() {
+    private void initBoard(imgResolution iRes) {
 
         //This is what will hold the 2da for image views
         imgBoard = new ImageView[24][8];
-
-        //Get the screen spacing variables
-        imgResolution iRes = new imgResolution(_dmDisplay.widthPixels, _dmDisplay.heightPixels);
-
-        //Set the 3 Bitmaps which will be used heavily
-        bmBlack = BitmapFactory.decodeResource(_rResources, R.drawable.black);
-        bmWhite = BitmapFactory.decodeResource(_rResources, R.drawable.red);
-        bmBlack2 = BitmapFactory.decodeResource(_rResources, R.drawable.black2);
-        bmWhite2 = BitmapFactory.decodeResource(_rResources, R.drawable.red2);		
-        bmClear = BitmapFactory.decodeResource(_rResources, R.drawable.empty);
-
-        bmBlack = Bitmap.createScaledBitmap(bmBlack, iRes._piece, iRes._piece, true);
-        bmWhite = Bitmap.createScaledBitmap(bmWhite, iRes._piece, iRes._piece, true);
-        bmBlack2 = Bitmap.createScaledBitmap(bmBlack2, iRes._piece, iRes._piece, true);
-        bmWhite2 = Bitmap.createScaledBitmap(bmWhite2, iRes._piece, iRes._piece, true);
-        bmClear = Bitmap.createScaledBitmap(bmClear, iRes._piece, iRes._piece, true);
 
         //Top Down Border Pixels
         Bitmap bmTD = BitmapFactory.decodeResource(_rResources, R.drawable.empty); //R.dawable.orange);
@@ -162,12 +178,14 @@ public class imgBoard {
                         //There is a max (currently of 8 Pieces per "Cell")
                         for (int iPiece = 0; iPiece < 8; iPiece++) {
 
-                            ImageView iv = new ImageView(_mContext);
+                            final ImageView iv = new ImageView(_mContext);
+
                             if (iRow == 1) {
                                 setImageViewOwner(gameBoard.Player.WHITE, iv);
                                 imgBoard[(iBoardCol)][iPiece] = iv;
                             } else {
                                 setImageViewOwner(gameBoard.Player.BLACK, iv);
+
                                 imgBoard[(iBoardCol)][7 - iPiece] = iv;
                             }
                             tc.addView(iv);
@@ -229,25 +247,74 @@ public class imgBoard {
 		_tvJail.setText(sOut);
 	}
 
+    //Sets the default image, and pressed image as well as creation teh listeneres.
+    private void setDefaultAndPressedImages(final ImageView iv, final Bitmap bmDefault, final Bitmap bmPressed) {
+
+        //Default is the down image.
+        iv.setImageBitmap(bmDefault);
+
+        //nulls get nothing
+        if(bmDefault == null || bmPressed == null) {
+            iv.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+
+                    return false;
+                }
+            });
+        }
+        else {
+
+            iv.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            iv.setImageBitmap(bmPressed);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            iv.setImageBitmap(bmDefault);
+                            break;
+                    }
+
+                    return true;
+                }
+            });
+        }
+    }
+
     //Sets an image view to be owned by a particular player (or empty if null)
-	private void setImageViewOwner(gameBoard.Player player, ImageView iv, int Count) {
+	private void setImageViewOwner(gameBoard.Player player, final ImageView iv, int Count) {
         try {			
-			
+
+            //Black player
             if (player == gameBoard.Player.BLACK) {
-				if(Math.abs(Count) > 8)
-					iv.setImageBitmap(bmBlack2);
-				else
-					iv.setImageBitmap(bmBlack);
 
-            } else if (player == gameBoard.Player.WHITE) {
-                if(Math.abs(Count) > 8)
-					iv.setImageBitmap(bmWhite2);
-				else
-					iv.setImageBitmap(bmWhite);
+                //Over 8 pieces already exist
+				if(Math.abs(Count) > 8) {
+                    setDefaultAndPressedImages(iv, bmBlack2, bmBlackPick);
+                }
 
+                //8 or less
+                else {
+                    setDefaultAndPressedImages(iv, bmBlack, bmBlackPick);
+                }
+
+            //White player
+			} else if (player == gameBoard.Player.WHITE) {
+
+                //Over 8 pieces
+				if(Math.abs(Count) > 8) {
+                    setDefaultAndPressedImages(iv, bmWhite2, bmWhitePick);
+
+                //8 or less
+				}
+                else {
+                    setDefaultAndPressedImages(iv, bmWhite, bmWhitePick);
+                }
             } else {
-                iv.setImageBitmap(bmClear);
-
+                setDefaultAndPressedImages(iv, bmClear, null);
             }
         }
         catch (Exception e){
