@@ -64,7 +64,7 @@ public class homePage extends ActionBarActivity {
                 //Toast.makeText(mContext, "New Game Started", Toast.LENGTH_SHORT).show();
 
                 gameBoard.newGame(com.MagikSquirrel.backgammon.gameBoard.Player.BLACK);
-                imgBoard.redrawBoard(gameBoard);
+                imgBoard.redrawBoard();
 
                 //Give black a go
                 Spinner sSpin = (Spinner) findViewById(R.id.sSource);
@@ -163,7 +163,7 @@ public class homePage extends ActionBarActivity {
 				}
 
                 //Redraw the board
-                imgBoard.redrawBoard(gameBoard);
+                imgBoard.redrawBoard();
                 imgBoard.updateSpinnerChoices(gameBoard);
             }
         });
@@ -175,7 +175,7 @@ public class homePage extends ActionBarActivity {
             public void onClick(View view) {
 
                 gameBoard.emptyGame();
-                imgBoard.redrawBoard(gameBoard);
+                imgBoard.redrawBoard();
 
                 Button bMove = (Button) findViewById(R.id.bMove);
                 bMove.setEnabled(false);
@@ -195,7 +195,7 @@ public class homePage extends ActionBarActivity {
                 int iVal = gameBoard.getPiecesInColumn(iSrc);
                 Toast.makeText(mContext, "Column has this many pieces :"+Integer.toString(iVal), Toast.LENGTH_SHORT).show();
 
-                imgBoard.redrawBoard(gameBoard);
+                imgBoard.redrawBoard();
 
                 //Give the spinner ALL choices
                 List<String> lsSources = new ArrayList<String>();
@@ -216,7 +216,7 @@ public class homePage extends ActionBarActivity {
             public void onClick(View view) {
 
                 gameBoard.setTestGame(Integer.parseInt(btnDebug.getText().toString()));
-                imgBoard.redrawBoard(gameBoard);
+                imgBoard.redrawBoard();
 
                 imgBoard.updateSpinnerChoices(gameBoard);
 

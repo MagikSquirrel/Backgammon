@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -42,6 +44,7 @@ public class imgBoard {
     private Bitmap bmBlackPick;
     private Bitmap bmWhitePick;
     private Bitmap bmClear;
+    private Bitmap bmClearPick;
 
     //CONSTRUCTOR
     imgBoard(Context Context, Resources Resources, Display Display, gameBoard gBoard, TableLayout tlBoard, Spinner sSrcPoint, TextView Player, TextView Jail)  {
@@ -88,6 +91,9 @@ public class imgBoard {
 
         bmClear = BitmapFactory.decodeResource(_rResources, R.drawable.empty);
         bmClear = Bitmap.createScaledBitmap(bmClear, iRes._piece, iRes._piece, true);
+
+        bmClearPick = BitmapFactory.decodeResource(_rResources, R.drawable.emptypick);
+        bmClearPick = Bitmap.createScaledBitmap(bmClearPick, iRes._piece, iRes._piece, true);
 	}
 
     //This initializes the gameBoard, and all the game pieces
@@ -302,9 +308,15 @@ public class imgBoard {
                                 //Set spinner to this!
                                 setSpinnerChoice(_gBoard, iPoint);
 
+                                //Show moves!
+                                showMoves(iPoint);
+
                                 break;
                             case MotionEvent.ACTION_UP:
                                 iv.setImageBitmap(bmDefault);
+
+                                redrawBoard();
+
                                 break;
                         }
 
@@ -358,11 +370,26 @@ public class imgBoard {
 		setImageViewOwner(player, iv, 1);
     }
 
-    public void redrawBoard(gameBoard Board)
+    public void showMoves(int iSrc) {
+        boolean[] bMoves = _gBoard.getAllowedMovesByDice(iSrc);
+
+        for(int i=0 ; i<bMoves.length ; i++) {
+
+            //Only worry about places we can go
+            if (bMoves[i] == true) {
+                //Get the first piece!
+                ImageView ivDst = (ImageView) this.imgBoard[i][0];
+
+                ivDst.setImageBitmap(bmClearPick);
+            }
+        }
+    }
+
+    public void redrawBoard()
     {
         for(int i=0 ; i<24 ; i++) {
 
-            int iCount = Board.getPiecesInColumn(i);
+            int iCount = _gBoard.getPiecesInColumn(i);
 
             for(int j=0 ; j<8 ; j++) {
                 if(Math.abs(iCount) > j) {
@@ -379,10 +406,10 @@ public class imgBoard {
         }
 
         //Update the player
-        showCurrentPlayer(Board);
+        showCurrentPlayer(_gBoard);
 
 		//Update the jail count
-		showJailCount(Board);
+		showJailCount(_gBoard);
     }
 
 }

@@ -73,7 +73,7 @@ public class gameBoard {
     //METHODS - Dice Settings
     public Integer getDie1(boolean UseIt) {
         //We are NOT consuming this dice
-        if(UseIt == false)
+        if(!UseIt)
             return _die1;
 
         //Store the return value
@@ -90,7 +90,7 @@ public class gameBoard {
     }
     public Integer getDie2(boolean UseIt) {
         //We are NOT consuming this dice
-        if(UseIt == false)
+        if(!UseIt)
             return _die2;
 
         //Store the return value
@@ -239,7 +239,19 @@ public class gameBoard {
             case 5:
                 fullGame();
 
-            break;				
+                break;
+
+            //Red's turn to take a black piece
+            case 6:
+
+                for(int j=0 ; j<6 ; j++) {
+                    _board[j] = -1;
+                }
+                _board[6] = 5;
+                _board[7] = -5;
+
+                break;
+
 		}
 	}
 	
@@ -387,7 +399,7 @@ public class gameBoard {
         else  if(player == Player.WHITE)
             bBlack = false;
 
-        iDst = ( bBlack == true ? iRoll-1 : (24-iRoll));
+        iDst = (bBlack ? iRoll-1 : (24-iRoll));
 
         //Free?             OR      Same side add
         if( (_board[iDst] == 0) || (bBlack && _board[iDst] < 0) ) {
@@ -478,7 +490,20 @@ public class gameBoard {
     public boolean canBearOff() {
         return canBearOff(_current);
     }
-	
+
+    public boolean[] getAllowedMovesByDice(int iSrc) {
+
+        int iDie1 = Math.abs(_die1);
+        int iDie2 = Math.abs(_die2);
+
+        if(getCurrentPlayer() == Player.BLACK) {
+            iDie1 = -(iDie1);
+            iDie2 = -(iDie2);
+        }
+
+        return getAllowedMoves(iSrc, iDie1, iDie2);
+    }
+
 	//Returns all the destination columns allowed WITH the dice restrictions
 	public boolean[] getAllowedMoves(int iSrc, int iDie1, int iDie2) {
 		int iCombo = (iDie1+iDie2);		
