@@ -2,8 +2,13 @@ package com.MagikSquirrel.backgammon;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class gameBoard {
+
+    //FINALS
+    private static final int DICE_MIN = 1;
+    private static final int DICE_MAX = 6;
 
 	//FIELDS
     private int[] _board;
@@ -11,6 +16,8 @@ public class gameBoard {
     private int _outwhite;
     private int _bearblack; //Pieces that have been "beared off"
     private int _bearwhite; //Pieces that have been "beared off"
+    private int _die1;
+    private int _die2;
     private Player _current;
 	private String _log = "";
 
@@ -61,7 +68,63 @@ public class gameBoard {
     //Assume Current player if none passed
     public int getPiecesBearedOff(){
         return getPiecesBearedOff(_current);
-    }	
+    }
+
+    //METHODS - Dice Settings
+    public Integer getDie1(boolean UseIt) {
+        //We are NOT consuming this dice
+        if(UseIt == false)
+            return _die1;
+
+        //Store the return value
+        int iReturn = _die1;
+
+        //If it's negative, it's the first use of a double.
+        if(_die1 < 0)
+            _die1 = -(_die1);
+            //If it's positive, it's a normal die
+        else
+            _die1 = 0;
+
+        return iReturn;
+    }
+    public Integer getDie2(boolean UseIt) {
+        //We are NOT consuming this dice
+        if(UseIt == false)
+            return _die2;
+
+        //Store the return value
+        int iReturn = _die2;
+
+        //If it's negative, it's the first use of a double.
+        if(_die2 < 0)
+            _die2 = -(_die2);
+            //If it's positive, it's a normal die
+        else
+            _die2 = 0;
+
+        return iReturn;
+    }
+    public Integer getDie1() {
+        return getDie1(false);
+    }
+    public Integer getDie2() {
+        return getDie2(false);
+    }
+
+    public void rollDice() {
+        Random r = new Random();
+
+        //Get random in range of their default min/max vals
+        _die1 = r.nextInt(DICE_MAX - DICE_MIN + 1) + DICE_MIN;
+        _die2 = r.nextInt(DICE_MAX - DICE_MIN + 1) + DICE_MIN;
+		
+		//Doubles? If so set both to negative
+		if(_die1 == _die2) {
+			_die1 = -_die1;
+			_die2 = -_die2;
+		}
+    }
 
 	//METHODS - Full Game Settings
     //This fills the gameboard with pieces (not a real state)
@@ -373,7 +436,7 @@ public class gameBoard {
         if(p == Player.BLACK)
             return _bearblack;
         else if(p == Player.WHITE)
-            return _bearblack;
+            return _bearwhite;
 
         return -1;
     }

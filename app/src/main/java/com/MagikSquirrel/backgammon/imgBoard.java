@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -25,10 +26,12 @@ public class imgBoard {
     private Context _mContext;
     private Resources _rResources;
     private DisplayMetrics _dmDisplay;
+    private gameBoard _gBoard;
     private TableLayout _tlBoard;
 
 	private TextView _tvPlayer;
 	private TextView _tvJail;
+    private Spinner _sSrcPoint;
 
     private ImageView[][] imgBoard;
 
@@ -41,12 +44,14 @@ public class imgBoard {
     private Bitmap bmClear;
 
     //CONSTRUCTOR
-    imgBoard(Context Context, Resources Resources, Display Display, TableLayout Board, TextView Player, TextView Jail)  {
+    imgBoard(Context Context, Resources Resources, Display Display, gameBoard gBoard, TableLayout tlBoard, Spinner sSrcPoint, TextView Player, TextView Jail)  {
         _mContext = Context;
         _rResources = Resources;
-        _tlBoard = Board;
+        _tlBoard = tlBoard;
+        _sSrcPoint = sSrcPoint;
 		_tvPlayer = Player;
 		_tvJail = Jail;
+		_gBoard = gBoard;
 
         //Get the screen resolution.
         _dmDisplay = new DisplayMetrics();
@@ -219,7 +224,7 @@ public class imgBoard {
 	//METHODS
 	//This updates the spinner with a list of columns where the current
     //player has pieces available
-    public Spinner updateSpinnerChoices(gameBoard gameBoard, Spinner sSource, int id) {
+    public void updateSpinnerChoices(gameBoard gameBoard) {
 
         List<String> lsSources;
 
@@ -233,10 +238,15 @@ public class imgBoard {
 		}
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(_mContext,
-                id, lsSources);
-        sSource.setAdapter(adapter);
+                R.layout.spinner_item, lsSources);
+        _sSrcPoint.setAdapter(adapter);
 
-        return sSource;
+    }
+    public void setSpinnerChoice(gameBoard gameBoard, int iChoice ) {
+
+        ArrayAdapter aChoices = (ArrayAdapter) _sSrcPoint.getAdapter();
+        int iPosition = aChoices.getPosition(Integer.toString(iChoice));
+        _sSrcPoint.setSelection(iPosition);
     }
 
 	//Updates the Current Player Text
@@ -278,20 +288,29 @@ public class imgBoard {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
 
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            iv.setImageBitmap(bmPressed);
+                    //Get the Point and Height of this piece from Tags
+                    int iPoint = (int) iv.getTag(R.id.tvWhite);
+                    int iHeight = (int) iv.getTag(R.id.tvBlack);
 
-                            int i = (int) iv.getTag(R.id.tvWhite);
-                            int j = (int) iv.getTag(R.id.tvBlack);
+                    //Only the current owner can touch a piece
+                    if(_gBoard.getColumnsWithPieces().contains(Integer.toString(iPoint)) )
+                    {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                iv.setImageBitmap(bmPressed);
 
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            iv.setImageBitmap(bmDefault);
-                            break;
+                                //Set spinner to this!
+                                setSpinnerChoice(_gBoard, iPoint);
+
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                iv.setImageBitmap(bmDefault);
+                                break;
+                        }
+
+                        return true;
                     }
-
-                    return true;
+                    return  false;
                 }
             });
         }

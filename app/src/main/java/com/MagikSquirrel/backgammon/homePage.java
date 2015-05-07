@@ -37,15 +37,16 @@ public class homePage extends ActionBarActivity {
         //Draw the first one
         mContext = getApplicationContext();
 
-
         //Create the internal game gameBoard
         gameBoard = new gameBoard();
         imgBoard = new imgBoard(mContext,
-                            getResources(),
-                            (Display) getWindowManager().getDefaultDisplay(),
-                            (TableLayout) findViewById(R.id.tlBoard),
-                            (TextView) findViewById(R.id.tvPlayer),
-							(TextView) findViewById(R.id.tvJail)
+                getResources(),
+                (Display) getWindowManager().getDefaultDisplay(),
+                gameBoard,
+                (TableLayout) findViewById(R.id.tlBoard),
+                (Spinner) findViewById(R.id.sSource),
+                (TextView) findViewById(R.id.tvPlayer),
+                (TextView) findViewById(R.id.tvJail)
         );
 
         //Create dice options
@@ -60,14 +61,14 @@ public class homePage extends ActionBarActivity {
             @Override
             public void onClick(View view) {
 
-                Toast.makeText(mContext, "New Game Started", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mContext, "New Game Started", Toast.LENGTH_SHORT).show();
 
                 gameBoard.newGame(com.MagikSquirrel.backgammon.gameBoard.Player.BLACK);
                 imgBoard.redrawBoard(gameBoard);
 
                 //Give black a go
                 Spinner sSpin = (Spinner) findViewById(R.id.sSource);
-                imgBoard.updateSpinnerChoices(gameBoard, sSpin, R.layout.spinner_item);
+                imgBoard.updateSpinnerChoices(gameBoard);
 
                 //Enable check-boxes
                 CheckBox cbDie1 = (CheckBox) findViewById(R.id.cbDie1);
@@ -125,27 +126,15 @@ public class homePage extends ActionBarActivity {
                 if(mMsg == com.MagikSquirrel.backgammon.gameBoard.MoveMsg.VALID_COMPLETE) {
 
                     //Exhaust the use of Die1.
-                    if (cbDie1.isChecked()) {
-					
-						//Was this a double?
-						if(bDoubles1)
-							bDoubles1 = false;
-						else {					
-							cbDie1.setChecked(false);
-							cbDie1.setEnabled(false);
-						}
+                    if( (cbDie1.isChecked()) && (gameBoard.getDie1(true) >= 0) ) {
+                        cbDie1.setChecked(false);
+                        cbDie1.setEnabled(false);
                     }
 
                     //Exhaust the use of Die2.
-                    if (cbDie2.isChecked()) {
-					
-						//Was this a double?
-						if(bDoubles2)
-                            bDoubles2 = false;
-						else {
-							cbDie2.setChecked(false);
-							cbDie2.setEnabled(false);
-						}
+                    if( (cbDie2.isChecked()) && (gameBoard.getDie2(true) >= 0) ) {
+                        cbDie2.setChecked(false);
+                        cbDie2.setEnabled(false);
                     }
 
                     //Was that a winner?
@@ -175,7 +164,7 @@ public class homePage extends ActionBarActivity {
 
                 //Redraw the board
                 imgBoard.redrawBoard(gameBoard);
-                imgBoard.updateSpinnerChoices(gameBoard, sSpin, R.layout.spinner_item);
+                imgBoard.updateSpinnerChoices(gameBoard);
             }
         });
 
@@ -229,8 +218,7 @@ public class homePage extends ActionBarActivity {
                 gameBoard.setTestGame(Integer.parseInt(btnDebug.getText().toString()));
                 imgBoard.redrawBoard(gameBoard);
 
-                Spinner sSpin = (Spinner) findViewById(R.id.sSource);
-                imgBoard.updateSpinnerChoices(gameBoard, sSpin, R.layout.spinner_item);
+                imgBoard.updateSpinnerChoices(gameBoard);
 
                 Button bMove = (Button) findViewById(R.id.bMove);
                 bMove.setEnabled(true);
@@ -243,22 +231,16 @@ public class homePage extends ActionBarActivity {
             @Override
             public void onClick(View view) {
 
-            Random r = new Random();
+            gameBoard.rollDice();
 
-            //Get random in range of their default min/max vals
-            int i1 = r.nextInt(npDie1.getMaxValue() - npDie1.getMinValue() + 1) + npDie1.getMinValue();
-            int i2 = r.nextInt(npDie2.getMaxValue() - npDie2.getMinValue() + 1) + npDie2.getMinValue();
-			
 			//Doubles!
-			if(i1 == i2) {
-				bDoubles1 = true;
-				bDoubles2 = true;
+			if(gameBoard.getDie1() == gameBoard.getDie2()) {
 				Toast.makeText(mContext, gameBoard.getCurrentPlayer().toString()+" rolled doubles!", Toast.LENGTH_SHORT).show();
 			}			
 
             //Set the Number Pickers to those
-            npDie1.setValue(i1);
-            npDie2.setValue(i2);
+            npDie1.setValue(Math.abs(gameBoard.getDie1()));
+            npDie2.setValue(Math.abs(gameBoard.getDie2()));
 
             //You can only roll once man.
             btnRoll.setEnabled(false);
