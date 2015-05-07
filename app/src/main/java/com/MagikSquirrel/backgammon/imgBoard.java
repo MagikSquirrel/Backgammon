@@ -26,12 +26,12 @@ public class imgBoard {
     private Resources _rResources;
     private DisplayMetrics _dmDisplay;
     private TableLayout _tlBoard;
-	
+
 	private TextView _tvPlayer;
 	private TextView _tvJail;
-	
+
     private ImageView[][] imgBoard;
-	
+
 	private Bitmap bmBlack;
     private Bitmap bmWhite;
     private Bitmap bmBlack2;
@@ -51,18 +51,18 @@ public class imgBoard {
         //Get the screen resolution.
         _dmDisplay = new DisplayMetrics();
         Display.getMetrics(_dmDisplay);
-        imgResolution iRes = new imgResolution(_dmDisplay.widthPixels, _dmDisplay.heightPixels);		
-		
+        imgResolution iRes = new imgResolution(_dmDisplay.widthPixels, _dmDisplay.heightPixels);
+
 		//Initialize the bitmaps
 		initBitmaps(iRes);
 
         //Initialize the board...
         initBoard(iRes);
     }
-	
+
 	//Initializes the Bitmaps that will be used repeatedly.
-	private void initBitmaps(imgResolution iRes) {	
-	
+	private void initBitmaps(imgResolution iRes) {
+
         bmBlack = BitmapFactory.decodeResource(_rResources, R.drawable.black);
         bmBlack = Bitmap.createScaledBitmap(bmBlack, iRes._piece, iRes._piece, true);
 
@@ -82,7 +82,7 @@ public class imgBoard {
         bmWhitePick = Bitmap.createScaledBitmap(bmWhitePick, iRes._piece, iRes._piece, true);
 
         bmClear = BitmapFactory.decodeResource(_rResources, R.drawable.empty);
-        bmClear = Bitmap.createScaledBitmap(bmClear, iRes._piece, iRes._piece, true);	
+        bmClear = Bitmap.createScaledBitmap(bmClear, iRes._piece, iRes._piece, true);
 	}
 
     //This initializes the gameBoard, and all the game pieces
@@ -182,11 +182,20 @@ public class imgBoard {
 
                             if (iRow == 1) {
                                 setImageViewOwner(gameBoard.Player.WHITE, iv);
-                                imgBoard[(iBoardCol)][iPiece] = iv;
+
+                                //Save the Column number and Piece number for later.
+                                iv.setTag(R.id.tvWhite, iBoardCol);
+                                iv.setTag(R.id.tvBlack, iPiece);
+
+                                imgBoard[iBoardCol][iPiece] = iv;
                             } else {
                                 setImageViewOwner(gameBoard.Player.BLACK, iv);
 
-                                imgBoard[(iBoardCol)][7 - iPiece] = iv;
+                                //Save the Column number and Piece number for later.
+                                iv.setTag(R.id.tvWhite, iBoardCol);
+                                iv.setTag(R.id.tvBlack, (7-iPiece));
+
+                                imgBoard[iBoardCol][7 - iPiece] = iv;
                             }
                             tc.addView(iv);
                         }
@@ -205,15 +214,15 @@ public class imgBoard {
                 setImageViewOwner(null, imgBoard[i][j]);
             }
         }
-    }    
-	
-	//METHODS	
+    }
+
+	//METHODS
 	//This updates the spinner with a list of columns where the current
     //player has pieces available
-    public Spinner updateSpinnerChoices(gameBoard gameBoard, Spinner sSource, int id) {	
-		
+    public Spinner updateSpinnerChoices(gameBoard gameBoard, Spinner sSource, int id) {
+
         List<String> lsSources;
-		
+
 		//Does this player have jailed pieces?
 		if(gameBoard.getPiecesInJail() != 0) {
 			lsSources = Arrays.asList("-1");
@@ -222,14 +231,14 @@ public class imgBoard {
 		else {
 			lsSources = gameBoard.getColumnsWithPieces();
 		}
-		
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(_mContext,
                 id, lsSources);
         sSource.setAdapter(adapter);
 
         return sSource;
     }
-	
+
 	//Updates the Current Player Text
 	public void showCurrentPlayer (gameBoard Board){
         if(Board.getCurrentPlayer() == gameBoard.Player.BLACK)
@@ -237,12 +246,12 @@ public class imgBoard {
         else if(Board.getCurrentPlayer() == gameBoard.Player.WHITE)
             _tvPlayer.setText("Player Red");
 	}
-	
+
 	//Updates the Jail Count Text
 	public void showJailCount (gameBoard Board){
         int iBlack = Board.getPiecesInJail(gameBoard.Player.BLACK);
 		int iWhite = Board.getPiecesInJail(gameBoard.Player.WHITE);
-		
+
 		String sOut = "Jail - Black: "+Integer.toString(iBlack)+" Red: "+Integer.toString(iWhite);
 		_tvJail.setText(sOut);
 	}
@@ -272,6 +281,10 @@ public class imgBoard {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
                             iv.setImageBitmap(bmPressed);
+
+                            int i = (int) iv.getTag(R.id.tvWhite);
+                            int j = (int) iv.getTag(R.id.tvBlack);
+
                             break;
                         case MotionEvent.ACTION_UP:
                             iv.setImageBitmap(bmDefault);
@@ -286,7 +299,7 @@ public class imgBoard {
 
     //Sets an image view to be owned by a particular player (or empty if null)
 	private void setImageViewOwner(gameBoard.Player player, final ImageView iv, int Count) {
-        try {			
+        try {
 
             //Black player
             if (player == gameBoard.Player.BLACK) {
@@ -319,7 +332,7 @@ public class imgBoard {
         }
         catch (Exception e){
 
-        }	
+        }
 	}
     //If count isn't specified, assume 1
     private void setImageViewOwner(gameBoard.Player player, ImageView iv) {
@@ -348,7 +361,7 @@ public class imgBoard {
 
         //Update the player
         showCurrentPlayer(Board);
-		
+
 		//Update the jail count
 		showJailCount(Board);
     }
