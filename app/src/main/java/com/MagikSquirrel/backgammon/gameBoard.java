@@ -39,6 +39,7 @@ public class gameBoard {
 		NO_SOURCE { public String toString() { return "No Source Piece"; } },
         SAME_SPOT { public String toString() { return "Move into Same Spot"; } },
         BLOCKED	 { public String toString() { return "Blocked by Enemy"; } },
+        BOTH_DICE	 { public String toString() { return "Both die used"; } },
         INVALID	 { public String toString() { return "UNKNOWN STATE"; } }
 	}    
 

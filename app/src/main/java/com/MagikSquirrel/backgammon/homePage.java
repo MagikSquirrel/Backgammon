@@ -26,8 +26,6 @@ public class homePage extends ActionBarActivity {
     private Context mContext;
     private gameBoard gameBoard;
     private imgBoard imgBoard;
-	private boolean bDoubles1;
-	private boolean bDoubles2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,24 +97,31 @@ public class homePage extends ActionBarActivity {
                 //Get the states of the spinners (contain the value of our dice)
                 CheckBox cbDie1 = (CheckBox) findViewById(R.id.cbDie1);
                 CheckBox cbDie2 = (CheckBox) findViewById(R.id.cbDie2);
+
+                gameBoard.MoveMsg mMsg = com.MagikSquirrel.backgammon.gameBoard.MoveMsg.INVALID;
                 int iCount = 0;
 
-                if(cbDie1.isChecked()) {
+                //As per rule: "The same checker may be moved twice, as long as the two moves
+                //          can be made separately and legally: six and then three, or three and then six."
+                if(cbDie1.isChecked() && cbDie2.isChecked()) {
+                    mMsg = com.MagikSquirrel.backgammon.gameBoard.MoveMsg.BOTH_DICE;
+                }
+
+                else if(cbDie1.isChecked()) {
                     iCount += npDie1.getValue();
 				}
 
-                if(cbDie2.isChecked()) {
+                else if(cbDie2.isChecked()) {
                     iCount += npDie2.getValue();
                 }
 
                 //Dealing with a jailing?
-                gameBoard.MoveMsg mMsg = com.MagikSquirrel.backgammon.gameBoard.MoveMsg.INVALID;
                 if(iSrc == -1){
                     mMsg = gameBoard.unjailPiece(iCount);
-                    Toast.makeText(mContext, "Unjailing was a :"+mMsg.toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(mContext, "Unjailing was a :"+mMsg.toString(), Toast.LENGTH_SHORT).show();
                 }
                 //Normal Movement
-                else {
+                else if(iCount != 0) {
 
                     //Move the piece
                     mMsg = gameBoard.movePiece(iSrc, iCount, false);
@@ -269,6 +274,28 @@ public class homePage extends ActionBarActivity {
             npDie1.setValue(Math.abs(gameBoard.getDie1()));
             npDie2.setValue(Math.abs(gameBoard.getDie2()));
 
+            }
+        });
+
+        //Checkbox Use Dice
+        final CheckBox cbDie1 = (CheckBox) findViewById(R.id.cbDie1);
+        final CheckBox cbDie2 = (CheckBox) findViewById(R.id.cbDie2);
+
+        cbDie1.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(cbDie2.isChecked())
+                    cbDie2.setChecked(false);
+            }
+        });
+
+        cbDie2.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(cbDie1.isChecked())
+                    cbDie1.setChecked(false);
             }
         });
 
