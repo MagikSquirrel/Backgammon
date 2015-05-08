@@ -68,7 +68,7 @@ public class homePage extends ActionBarActivity {
 
                 //Give black a go
                 Spinner sSpin = (Spinner) findViewById(R.id.sSource);
-                imgBoard.updateSpinnerChoices(gameBoard);
+                imgBoard.updateSpinnerChoices();
 
                 //Enable check-boxes
                 CheckBox cbDie1 = (CheckBox) findViewById(R.id.cbDie1);
@@ -164,7 +164,7 @@ public class homePage extends ActionBarActivity {
 
                 //Redraw the board
                 imgBoard.redrawBoard();
-                imgBoard.updateSpinnerChoices(gameBoard);
+                imgBoard.updateSpinnerChoices();
             }
         });
 
@@ -218,7 +218,7 @@ public class homePage extends ActionBarActivity {
                 gameBoard.setTestGame(Integer.parseInt(btnDebug.getText().toString()));
                 imgBoard.redrawBoard();
 
-                imgBoard.updateSpinnerChoices(gameBoard);
+                imgBoard.updateSpinnerChoices();
 
                 Button bMove = (Button) findViewById(R.id.bMove);
                 bMove.setEnabled(true);
@@ -231,23 +231,44 @@ public class homePage extends ActionBarActivity {
             @Override
             public void onClick(View view) {
 
-            gameBoard.rollDice();
+            //Roll and lets see if we have a move.
+            if(!gameBoard.rollDice()) {
+                Toast.makeText(mContext, gameBoard.getCurrentPlayer().toString()+" can't move with this roll.", Toast.LENGTH_SHORT).show();
 
-			//Doubles!
-			if(gameBoard.getDie1() == gameBoard.getDie2()) {
-				Toast.makeText(mContext, gameBoard.getCurrentPlayer().toString()+" rolled doubles!", Toast.LENGTH_SHORT).show();
-			}			
+                //Swap players
+                gameBoard.swapCurrentPlayer();
+
+                //Update Spinner
+                imgBoard.updateSpinnerChoices();
+
+                //Redraw the board.
+                imgBoard.showCurrentPlayer();
+
+                //Enable Roll
+                btnRoll.setEnabled(true);
+
+                //Disable Move
+                btnMove.setEnabled(false);
+            }
+
+            //Regular movable
+            else {
+                //Disable Roll
+                btnRoll.setEnabled(false);
+
+                //Enable Move
+                btnMove.setEnabled(true);
+            }
+
+            //Doubles!
+            if(gameBoard.getDie1() == gameBoard.getDie2()) {
+                Toast.makeText(mContext, gameBoard.getCurrentPlayer().toString() + " rolled doubles!", Toast.LENGTH_SHORT).show();
+            }
 
             //Set the Number Pickers to those
             npDie1.setValue(Math.abs(gameBoard.getDie1()));
             npDie2.setValue(Math.abs(gameBoard.getDie2()));
 
-            //You can only roll once man.
-            btnRoll.setEnabled(false);
-
-            //Enable Mover button.
-            Button btnMove = (Button) findViewById(R.id.bMove);
-            btnMove.setEnabled(true);
             }
         });
 

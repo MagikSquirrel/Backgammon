@@ -230,17 +230,17 @@ public class imgBoard {
 	//METHODS
 	//This updates the spinner with a list of columns where the current
     //player has pieces available
-    public void updateSpinnerChoices(gameBoard gameBoard) {
+    public void updateSpinnerChoices() {
 
         List<String> lsSources;
 
 		//Does this player have jailed pieces?
-		if(gameBoard.getPiecesInJail() != 0) {
+		if(_gBoard.getPiecesInJail() != 0) {
 			lsSources = Arrays.asList("-1");
         }
 		//Guess not, so they can move pieces.
 		else {
-			lsSources = gameBoard.getColumnsWithPieces();
+			lsSources = _gBoard.getColumnsWithPieces();
 		}
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(_mContext,
@@ -248,7 +248,7 @@ public class imgBoard {
         _sSrcPoint.setAdapter(adapter);
 
     }
-    public void setSpinnerChoice(gameBoard gameBoard, int iChoice ) {
+    public void setSpinnerChoice( int iChoice ) {
 
         ArrayAdapter aChoices = (ArrayAdapter) _sSrcPoint.getAdapter();
         int iPosition = aChoices.getPosition(Integer.toString(iChoice));
@@ -256,17 +256,17 @@ public class imgBoard {
     }
 
 	//Updates the Current Player Text
-	public void showCurrentPlayer (gameBoard Board){
-        if(Board.getCurrentPlayer() == gameBoard.Player.BLACK)
+	public void showCurrentPlayer (){
+        if(_gBoard.getCurrentPlayer() == gameBoard.Player.BLACK)
 		    _tvPlayer.setText("Player: Black");
-        else if(Board.getCurrentPlayer() == gameBoard.Player.WHITE)
+        else if(_gBoard.getCurrentPlayer() == gameBoard.Player.WHITE)
             _tvPlayer.setText("Player Red");
 	}
 
 	//Updates the Jail Count Text
-	public void showJailCount (gameBoard Board){
-        int iBlack = Board.getPiecesInJail(gameBoard.Player.BLACK);
-		int iWhite = Board.getPiecesInJail(gameBoard.Player.WHITE);
+	public void showJailCount (){
+        int iBlack = _gBoard.getPiecesInJail(gameBoard.Player.BLACK);
+		int iWhite = _gBoard.getPiecesInJail(gameBoard.Player.WHITE);
 
 		String sOut = "Jail - Black: "+Integer.toString(iBlack)+" Red: "+Integer.toString(iWhite);
 		_tvJail.setText(sOut);
@@ -306,7 +306,7 @@ public class imgBoard {
                                 iv.setImageBitmap(bmPressed);
 
                                 //Set spinner to this!
-                                setSpinnerChoice(_gBoard, iPoint);
+                                setSpinnerChoice(iPoint);
 
                                 //Show moves!
                                 showMoves(iPoint);
@@ -406,10 +406,10 @@ public class imgBoard {
         }
 
         //Update the player
-        showCurrentPlayer(_gBoard);
+        showCurrentPlayer();
 
 		//Update the jail count
-		showJailCount(_gBoard);
+		showJailCount();
     }
 
 }

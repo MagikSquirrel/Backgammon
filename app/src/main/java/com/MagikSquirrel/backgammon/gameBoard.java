@@ -1,6 +1,7 @@
 package com.MagikSquirrel.backgammon;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -112,7 +113,7 @@ public class gameBoard {
         return getDie2(false);
     }
 
-    public void rollDice() {
+    public boolean rollDice() {
         Random r = new Random();
 
         //Get random in range of their default min/max vals
@@ -124,6 +125,12 @@ public class gameBoard {
 			_die1 = -_die1;
 			_die2 = -_die2;
 		}
+
+        //Is a move allowed?
+        if(anyMove())
+            return true;
+
+        return false;
     }
 
 	//METHODS - Full Game Settings
@@ -252,6 +259,40 @@ public class gameBoard {
 
                 break;
 
+            //Same as 6, but we have no move as Red!
+            case 7:
+
+                for(int j=0 ; j<6 ; j++) {
+                    _board[j] = -2;
+                }
+                _board[6] = 5;
+                _board[7] = -5;
+
+                _current = Player.WHITE;
+
+                break;
+
+            //Red has one everywhere! (Testing highlighting)
+            case 8:
+
+                for(int j=0 ; j<_board.length ; j++){
+                    _board[j] = 1;
+                }
+
+                _current = Player.WHITE;
+
+                break;
+
+            //Black has one everywhere! (Testing highlighting)
+            case 9:
+
+                for(int j=0 ; j<_board.length ; j++){
+                    _board[j] = -1;
+                }
+
+                _current = Player.BLACK;
+
+                break;
 		}
 	}
 	
@@ -476,7 +517,7 @@ public class gameBoard {
         //White all pieces are 6-
         else if(player == Player.WHITE) {
 
-            for(int i = _board.length-iHomeSize-1; i<= _board.length-1 ; i++) {
+            for(int i = iHomeSize; i<= _board.length-1 ; i++) {
 
                 //Piece found not in home arena!
                 if(_board[i] > 0)
@@ -491,15 +532,30 @@ public class gameBoard {
         return canBearOff(_current);
     }
 
+    //Can Any of our pieces move anywhere?
+    public boolean anyMove(){
+        List<String> lsMoves = getColumnsWithPieces();
+
+        for( String s : lsMoves ) {
+            int iColumn = Integer.parseInt(s);
+            boolean[] bMoves = getAllowedMoves(iColumn);
+
+            for(int i=0 ; i<bMoves.length ; i++) {
+
+                //Return true on the first valid move!
+                if(bMoves[i])
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    //Given a single source, what points can we move to?
     public boolean[] getAllowedMovesByDice(int iSrc) {
 
         int iDie1 = Math.abs(_die1);
         int iDie2 = Math.abs(_die2);
-
-        if(getCurrentPlayer() == Player.BLACK) {
-            iDie1 = -(iDie1);
-            iDie2 = -(iDie2);
-        }
 
         return getAllowedMoves(iSrc, iDie1, iDie2);
     }
@@ -547,7 +603,7 @@ public class gameBoard {
 	
 		for(int i=0 ; i<_board.length ; i++) {
 		
-			int iCount = (i - iSrc);
+			int iCount = Math.abs(i - iSrc);
 	
 			if(movePiece(iSrc, iCount, true) == MoveMsg.VALID_TEST) {
 				//System.out.println("We can move from "+Integer.toString(iSrc)+" to "+Integer.toString(i));
@@ -572,6 +628,10 @@ public class gameBoard {
         //Are these "Bearing Off?"   BLACK going beyond 24 WHITE going beyond 0
         if(canBearOff() && ((_board[iSrc] < 0 && iDst >= 24) || (_board[iSrc] > 0 && iDst < 0)) ) {
             if(_board[iSrc] < 0) {
+
+                if(bTest)
+                    return MoveMsg.VALID_TEST;
+
                 _bearblack++;
                 _board[iSrc]++;
             }
