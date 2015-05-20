@@ -221,8 +221,14 @@ public class homePage extends ActionBarActivity {
             public void onClick(View view) {
 
                 gameBoard.setTestGame(Integer.parseInt(btnDebug.getText().toString()));
-                imgBoard.redrawBoard();
 
+                //Set the die if they're coded to be set.
+                if(gameBoard.getDie1() > 0 )
+                    npDie1.setValue(gameBoard.getDie1());
+                if(gameBoard.getDie2() > 0 )
+                    npDie2.setValue(gameBoard.getDie2());
+
+                imgBoard.redrawBoard();
                 imgBoard.updateSpinnerChoices();
 
                 Button bMove = (Button) findViewById(R.id.bMove);

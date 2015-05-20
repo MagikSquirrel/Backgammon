@@ -193,11 +193,16 @@ public class gameBoard {
 		switch(i) {
 			//Puts black and white next to each other to easily jail the other piece.
 			case 1:
-			
-				_board[0] = -1;
-				_board[1] = 1;
-				_board[12] = -1;
-				_board[14] = 1;
+
+                //Black side 0-11
+                for(int j=0 ; j<=11 ; j++) {
+                    _board[j] = -1;
+                }
+
+                //Black side 12-23
+                for(int j=12 ; j<=23 ; j++) {
+                    _board[j] = 1;
+                }
 			
 			break;
 
@@ -292,6 +297,34 @@ public class gameBoard {
                 }
 
                 _current = Player.BLACK;
+
+                break;
+
+            //Game with stepmom that she could go anywhere.
+            case 10:
+
+                _board[2] = 1;
+                _board[3] = -1;
+
+                _board[5] = 4;
+                _board[6] = -1;
+                _board[7] = 2;
+
+                _board[11] = -4;
+                _board[12] = 5;
+
+                _board[16] = -4;
+
+                _board[18] = -5;
+
+                _board[21] = 1;
+
+                _board[23] = 2;
+
+                _die1 = 6;
+                _die2 = 3;
+
+                _current = Player.WHITE;
 
                 break;
 		}
@@ -443,8 +476,8 @@ public class gameBoard {
 
         iDst = (bBlack ? iRoll-1 : (24-iRoll));
 
-        //Free?             OR      Same side add
-        if( (_board[iDst] == 0) || (bBlack && _board[iDst] < 0) ) {
+        //Free?             OR      Black side add              OR  White side add
+        if( (_board[iDst] == 0) || (bBlack && _board[iDst] < 0) || (!bBlack && _board[iDst] > 0) ) {
             //System.out.println("Freedom!");
             if(bBlack) {
                 _board[iDst]--;
@@ -456,7 +489,7 @@ public class gameBoard {
             }
         }
         //Same team add
-        else if(bBlack ^ _board[iDst] < 0) {
+        else {
             //System.out.print("Opposite side unjail - ");
             //Jail the enemy!
             if(Math.abs(_board[iDst]) == 1) {
