@@ -1,6 +1,8 @@
 package com.MagikSquirrel.backgammon;
 
+import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -21,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class homePage extends ActionBarActivity {
+public class homePage extends backgammonActionBarActivity {
 
     private Context mContext;
     private gameBoard gameBoard;
@@ -29,6 +31,10 @@ public class homePage extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //Add this activity to the App list
+        ((backgammonApp) this.getApplication()).addActivity(this.getPackageName(), this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
@@ -46,6 +52,7 @@ public class homePage extends ActionBarActivity {
                 (TextView) findViewById(R.id.tvPlayer),
                 (TextView) findViewById(R.id.tvJail)
         );
+        imgBoard.setApplication((backgammonApp) getApplication());
 
         //Create dice options
         final NumberPicker npDie1 = (NumberPicker) findViewById(R.id.npDie1);
@@ -307,33 +314,4 @@ public class homePage extends ActionBarActivity {
 
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home_page, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_board) {
-            setContentView(R.layout.activity_home_page);
-            return true;
-        }
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            setContentView(R.layout.settings);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }

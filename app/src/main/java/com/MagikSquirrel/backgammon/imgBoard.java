@@ -1,6 +1,7 @@
 package com.MagikSquirrel.backgammon;
 
 import android.app.ActionBar;
+import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -45,6 +46,11 @@ public class imgBoard {
     private Bitmap bmWhitePick;
     private Bitmap bmClear;
     private Bitmap bmClearPick;
+
+    private backgammonApp _application;
+
+    private String _sWhiteName = "Red";
+    private String _sBlackName = "Black";
 
     //CONSTRUCTOR
     imgBoard(Context Context, Resources Resources, Display Display, gameBoard gBoard, TableLayout tlBoard, Spinner sSrcPoint, TextView Player, TextView Jail)  {
@@ -258,9 +264,9 @@ public class imgBoard {
 	//Updates the Current Player Text
 	public void showCurrentPlayer (){
         if(_gBoard.getCurrentPlayer() == gameBoard.Player.BLACK)
-		    _tvPlayer.setText("Player: Black");
+		    _tvPlayer.setText("Player: "+getBlackName());
         else if(_gBoard.getCurrentPlayer() == gameBoard.Player.WHITE)
-            _tvPlayer.setText("Player Red");
+            _tvPlayer.setText("Player: "+getWhiteName());
 	}
 
 	//Updates the Jail Count Text
@@ -268,7 +274,8 @@ public class imgBoard {
         int iBlack = _gBoard.getPiecesInJail(gameBoard.Player.BLACK);
 		int iWhite = _gBoard.getPiecesInJail(gameBoard.Player.WHITE);
 
-		String sOut = "Jail - Black: "+Integer.toString(iBlack)+" Red: "+Integer.toString(iWhite);
+		String sOut = "Jail - "+getBlackName()+": "+Integer.toString(iBlack)+" "
+                +getWhiteName()+": "+Integer.toString(iWhite);
 		_tvJail.setText(sOut);
 	}
 
@@ -412,4 +419,27 @@ public class imgBoard {
 		showJailCount();
     }
 
+    public backgammonApp getApplication() {
+        return _application;
+    }
+
+    public void setApplication(backgammonApp application) {
+        this._application = application;
+    }
+
+    private String getWhiteName() {
+        if(this._application != null)
+        {
+            _sWhiteName = this._application.getWhiteName();
+        }
+        return _sWhiteName;
+    }
+
+    private String getBlackName() {
+        if(this._application != null)
+        {
+            _sBlackName = this._application.getBlackName();
+        }
+        return _sBlackName;
+    }
 }

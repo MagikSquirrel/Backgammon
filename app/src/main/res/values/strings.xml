@@ -2,6 +2,7 @@
     <string name="app_name">Backgammon</string>
     <string name="action_board">Game Board</string>
     <string name="action_settings">Settings</string>
+    <string name="action_board_full">Full Board</string>
     <string name="tvBlack">Black Player Name</string>
     <string name="tvWhite">White Player Name</string>
     <string name="bNewGame">New Game</string>
