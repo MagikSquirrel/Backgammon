@@ -1,7 +1,6 @@
 package com.MagikSquirrel.backgammon;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -10,6 +9,7 @@ public class gameBoard {
     //FINALS
     private static final int DICE_MIN = 1;
     private static final int DICE_MAX = 6;
+    private static final int PIECE_MAX = 15; //Maximum pieces a player can own.
 
 	//FIELDS
     private int[] _board;
@@ -25,8 +25,8 @@ public class gameBoard {
 	//ENUMS
     public static enum Player
     {
-        BLACK  { public String toString() { return "Black"; } },
-        WHITE { public String toString() { return "White"; } },
+        BLACK  { public String toString() { return "Black"; } }, //Negative pieces
+        WHITE { public String toString() { return "White"; } }, //Positive pieces
         NULL
     }
 	
@@ -135,9 +135,45 @@ public class gameBoard {
     }
 
 	//METHODS - Full Game Settings
+    //Checks to see if the board setup is legal and running.
+    //  We need 15 pieces each (check bear offed and jailed)
+    //  An active player
+    public boolean isBoardLegal() {
+
+        //An active player?
+        if(_current == Player.NULL)
+            return false;
+
+        int iWhite = 0;
+        int iBlack = 0;
+
+        //Count the pieces in play.
+        for(int i=0 ; i<_board.length ; i++){
+            if(_board[i] < 0)
+                iBlack += Math.abs(_board[i]);
+            else if(_board[i] > 0)
+                iWhite += _board[i];
+        }
+
+        //Count the jailed pieces
+        iWhite += _outwhite;
+        iBlack += _outwhite;
+
+        //Count the beared off pieces
+        iWhite += _bearwhite;
+        iBlack += _bearblack;
+
+        //Do the pieces equal the legal requirement?
+        if(iWhite != PIECE_MAX || iBlack != PIECE_MAX)
+            return false;
+
+        return true;
+    }
+
+
     //This fills the gameboard with pieces (not a real state)
     //This is used for testing piece graphics
-    public void fullGame() {
+    public void setBoardFull() {
         for(int i=0 ; i< _board.length ; i++){
             _board[i] = -8;
         }
@@ -145,7 +181,7 @@ public class gameBoard {
 
     //This empties the gameboard of pieces (not a real state)
     //This is used for testing piece graphics
-    public void emptyGame() {
+    public void setBoardEmpty() {
 	
 		//Clear the board
         for(int i=0 ; i< _board.length ; i++){
@@ -159,14 +195,14 @@ public class gameBoard {
 
     //Setup New game by placing pieces where they should
     //Negatives are black, positives are white
-    public void newGame(Player StartingPlayer){
+    public void setBoardNew(Player StartingPlayer){
         _current = StartingPlayer;
-        newGame();
+        setBoardNew();
     }
-    public void newGame() {
+    public void setBoardNew() {
 
         //Clear the board.
-        emptyGame();
+        setBoardEmpty();
 
         //black home
         _board[0] = -2;
@@ -186,9 +222,9 @@ public class gameBoard {
     }
 	
 	//This method is for setting up very specific game scenarios for testing
-	public void setTestGame(int i) {
+	public void setBoardTest(int i) {
 		//Firstly clear the game.
-		emptyGame();
+		setBoardEmpty();
 	
 		switch(i) {
 			//Puts black and white next to each other to easily jail the other piece.
@@ -250,7 +286,7 @@ public class gameBoard {
 
             //Full game
             case 5:
-                fullGame();
+                setBoardFull();
 
                 break;
 

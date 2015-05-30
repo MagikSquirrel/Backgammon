@@ -3,8 +3,6 @@ package com.MagikSquirrel.backgammon;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Intent;
-import android.view.MenuItem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +53,7 @@ public class backgammonApp extends Application {
 
         //Setup the pieces
         System.out.println("Setting up a new game...");
-        bg.newGame();
+        bg.setBoardNew();
         bg.print();
 
 		int iSrc = 11;

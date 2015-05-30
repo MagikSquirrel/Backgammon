@@ -1,15 +1,11 @@
 package com.MagikSquirrel.backgammon;
 
-import android.app.Application;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -21,7 +17,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class homePage extends backgammonActionBarActivity {
 
@@ -56,8 +51,9 @@ public class homePage extends backgammonActionBarActivity {
 
         //Create dice options
         final NumberPicker npDie1 = (NumberPicker) findViewById(R.id.npDie1);
-        npDie1.setMinValue(1); npDie1.setMaxValue(6);
         final NumberPicker npDie2 = (NumberPicker) findViewById(R.id.npDie2);
+
+        npDie1.setMinValue(1); npDie1.setMaxValue(6);
         npDie2.setMinValue(1); npDie2.setMaxValue(6);
 
         //NEW GAME BUTTON
@@ -66,28 +62,44 @@ public class homePage extends backgammonActionBarActivity {
             @Override
             public void onClick(View view) {
 
-                //Toast.makeText(mContext, "New Game Started", Toast.LENGTH_SHORT).show();
+                //Is there already a legal running game?
+                if(gameBoard.isBoardLegal() && !gameBoard.isGameWon()) {
 
-                gameBoard.newGame(com.MagikSquirrel.backgammon.gameBoard.Player.BLACK);
-                imgBoard.redrawBoard();
+                    //Create the Alert Box
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                            homePage.this);
 
-                //Give black a go
-                Spinner sSpin = (Spinner) findViewById(R.id.sSource);
-                imgBoard.updateSpinnerChoices();
+                    // set dialog message
+                    alertDialogBuilder
+                            .setMessage("There is a running game already. Creating a new game will make you loose your progress." +
+                                    " Are you sure you want to start a new game?")
+                            .setTitle("Confirm New Game")
+                            .setCancelable(false)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
 
-                //Enable check-boxes
-                CheckBox cbDie1 = (CheckBox) findViewById(R.id.cbDie1);
-                CheckBox cbDie2 = (CheckBox) findViewById(R.id.cbDie2);
-                cbDie1.setEnabled(true);
-                cbDie2.setEnabled(true);
+                                    Toast.makeText(mContext, "New Game Started", Toast.LENGTH_SHORT).show();
+                                    newGame();
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
 
-                //Disable number picker
-                npDie1.setEnabled(false);
-                npDie2.setEnabled(false);
+                                    dialog.cancel();
+                                }
+                            });
 
-                //Enable Roll
-                Button btnRoll = (Button) findViewById(R.id.bRoll);
-                btnRoll.setEnabled(true);
+                    // create alert dialog
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+
+                    // show it
+                    alertDialog.show();
+
+                }
+                //Open to new game!
+                else {
+                    newGame();
+                }
             }
         });
 
@@ -186,11 +198,33 @@ public class homePage extends backgammonActionBarActivity {
             @Override
             public void onClick(View view) {
 
-                gameBoard.emptyGame();
-                imgBoard.redrawBoard();
+                //Create the Alert Box
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                        homePage.this);
 
-                Button bMove = (Button) findViewById(R.id.bMove);
-                bMove.setEnabled(false);
+                // set dialog message
+                alertDialogBuilder
+                        .setMessage("Are you sure you want to clear the board?")
+                        .setTitle("Confirm Clearing Board")
+                        .setCancelable(false)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                                clearGame();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                                dialog.cancel();
+                            }
+                        });
+
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+
+                // show it
+                alertDialog.show();
             }
         });
 
@@ -227,7 +261,7 @@ public class homePage extends backgammonActionBarActivity {
             @Override
             public void onClick(View view) {
 
-                gameBoard.setTestGame(Integer.parseInt(btnDebug.getText().toString()));
+                gameBoard.setBoardTest(Integer.parseInt(btnDebug.getText().toString()));
 
                 //Set the die if they're coded to be set.
                 if(gameBoard.getDie1() > 0 )
@@ -312,6 +346,43 @@ public class homePage extends backgammonActionBarActivity {
             }
         });
 
+    }
+
+    //Clears the board for a new game.
+    private void clearGame() {
+        gameBoard.setBoardEmpty();
+        imgBoard.redrawBoard();
+
+        Button bMove = (Button) findViewById(R.id.bMove);
+        bMove.setEnabled(false);
+    }
+
+
+    //Sets up the board and pieces as necessary then configures the buttons and die.
+    private void newGame() {
+        final NumberPicker npDie1 = (NumberPicker) findViewById(R.id.npDie1);
+        final NumberPicker npDie2 = (NumberPicker) findViewById(R.id.npDie2);
+
+        gameBoard.setBoardNew(com.MagikSquirrel.backgammon.gameBoard.Player.BLACK);
+        imgBoard.redrawBoard();
+
+        //Give black a go
+        Spinner sSpin = (Spinner) findViewById(R.id.sSource);
+        imgBoard.updateSpinnerChoices();
+
+        //Enable check-boxes
+        CheckBox cbDie1 = (CheckBox) findViewById(R.id.cbDie1);
+        CheckBox cbDie2 = (CheckBox) findViewById(R.id.cbDie2);
+        cbDie1.setEnabled(true);
+        cbDie2.setEnabled(true);
+
+        //Disable number picker
+        npDie1.setEnabled(false);
+        npDie2.setEnabled(false);
+
+        //Enable Roll
+        Button btnRoll = (Button) findViewById(R.id.bRoll);
+        btnRoll.setEnabled(true);
     }
 
 }
