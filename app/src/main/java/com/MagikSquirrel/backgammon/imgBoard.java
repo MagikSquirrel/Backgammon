@@ -51,6 +51,7 @@ public class imgBoard {
 
     private String _sWhiteName = "Red";
     private String _sBlackName = "Black";
+    private boolean showHints = true;
 
     //CONSTRUCTOR
     imgBoard(Context Context, Resources Resources, Display Display, gameBoard gBoard, TableLayout tlBoard, Spinner sSrcPoint, TextView Player, TextView Jail)  {
@@ -264,9 +265,9 @@ public class imgBoard {
 	//Updates the Current Player Text
 	public void showCurrentPlayer (){
         if(_gBoard.getCurrentPlayer() == gameBoard.Player.BLACK)
-		    _tvPlayer.setText("Player: "+getBlackName());
+		    _tvPlayer.setText("Player: (B)"+getBlackName());
         else if(_gBoard.getCurrentPlayer() == gameBoard.Player.WHITE)
-            _tvPlayer.setText("Player: "+getWhiteName());
+            _tvPlayer.setText("Player: (R)"+getWhiteName());
 	}
 
 	//Updates the Jail Count Text
@@ -274,8 +275,8 @@ public class imgBoard {
         int iBlack = _gBoard.getPiecesInJail(gameBoard.Player.BLACK);
 		int iWhite = _gBoard.getPiecesInJail(gameBoard.Player.WHITE);
 
-		String sOut = "Jail - "+getBlackName()+": "+Integer.toString(iBlack)+" "
-                +getWhiteName()+": "+Integer.toString(iWhite);
+		String sOut = "Jail - (Black): "+Integer.toString(iBlack)+" "+
+                "(Red): "+Integer.toString(iWhite);
 		_tvJail.setText(sOut);
 	}
 
@@ -315,8 +316,9 @@ public class imgBoard {
                                 //Set spinner to this!
                                 setSpinnerChoice(iPoint);
 
-                                //Show moves!
-                                showMoves(iPoint);
+                                //Show moves (if we're allowed)
+                                if(getShowHints())
+                                    showMoves(iPoint);
 
                                 break;
                             case MotionEvent.ACTION_UP:
@@ -441,5 +443,13 @@ public class imgBoard {
             _sBlackName = this._application.getBlackName();
         }
         return _sBlackName;
+    }
+
+    private boolean getShowHints() {
+        if(this._application != null)
+        {
+            showHints = this._application.getShowHints();
+        }
+        return showHints;
     }
 }

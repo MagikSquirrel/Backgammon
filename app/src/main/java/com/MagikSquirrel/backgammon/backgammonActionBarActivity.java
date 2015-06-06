@@ -21,19 +21,24 @@ public class backgammonActionBarActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        Intent intent = null;
 
         switch (id) {
             case R.id.action_board:
-                startActivity(new Intent(this, homePage.class));
-                return true;
+                intent = new Intent(this, homePage.class); break;
 
             case R.id.action_settings:
-                startActivity(new Intent(this, settingsPage.class));
-                return true;
+                intent = new Intent(this, settingsPage.class); break;
 
             case R.id.action_boardfull:
-                startActivity(new Intent(this, boardPage.class));
-                return true;
+                intent = new Intent(this, boardPage.class); break;
+        }
+
+        if(intent != null) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

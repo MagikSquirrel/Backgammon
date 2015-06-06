@@ -12,7 +12,7 @@
             android:name=".homePage"
             android:screenOrientation="portrait"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
+            android:launchMode="singleInstance"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,13 +22,13 @@
         <activity
             android:name=".settingsPage"
             android:label="Settings"
-            android:launchMode="singleTask"
+            android:launchMode="singleInstance"
             >
         </activity>
         <activity
             android:name=".boardPage"
             android:label="@string/action_board_full"
-            android:launchMode="singleTask"
+            android:launchMode="singleInstance"
             android:screenOrientation="landscape"
             >
         </activity>
