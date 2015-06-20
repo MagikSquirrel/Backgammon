@@ -20,15 +20,30 @@ import java.util.List;
 
 public class homePage extends backgammonActionBarActivity {
 
+    private backgammonApp app;
     private Context mContext;
     private gameBoard gameBoard;
     private imgBoard imgBoard;
 
     @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        //If test case has been set, then we need to modify the game board.
+        if(app.getTestCase() != 0){
+            gameBoard.setBoardTest(app.getTestCase());
+            app.setTestCase(0);
+            imgBoard.updateSpinnerChoices();
+            imgBoard.redrawBoard();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         //Add this activity to the App list
-        ((backgammonApp) this.getApplication()).addActivity(this.getPackageName(), this);
+        app = (backgammonApp) this.getApplication();
+        //((backgammonApp) this.getApplication()).addActivity(this.getPackageName(), this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
@@ -47,7 +62,7 @@ public class homePage extends backgammonActionBarActivity {
                 (TextView) findViewById(R.id.tvPlayer),
                 (TextView) findViewById(R.id.tvJail)
         );
-        imgBoard.setApplication((backgammonApp) getApplication());
+        imgBoard.setApplication(app);
 
         //Create dice options
         final NumberPicker npDie1 = (NumberPicker) findViewById(R.id.npDie1);
@@ -252,28 +267,6 @@ public class homePage extends backgammonActionBarActivity {
                         R.layout.spinner_item, lsSources);
                 sSpin.setAdapter(adapter);
 
-            }
-        });
-
-        //DEBUG BUTTON
-        final Button btnDebug = (Button) findViewById(R.id.bDebug);
-        btnDebug.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-
-                gameBoard.setBoardTest(Integer.parseInt(btnDebug.getText().toString()));
-
-                //Set the die if they're coded to be set.
-                if(gameBoard.getDie1() > 0 )
-                    npDie1.setValue(gameBoard.getDie1());
-                if(gameBoard.getDie2() > 0 )
-                    npDie2.setValue(gameBoard.getDie2());
-
-                imgBoard.redrawBoard();
-                imgBoard.updateSpinnerChoices();
-
-                Button bMove = (Button) findViewById(R.id.bMove);
-                bMove.setEnabled(true);
             }
         });
 

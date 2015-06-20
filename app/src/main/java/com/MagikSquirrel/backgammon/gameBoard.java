@@ -363,6 +363,22 @@ public class gameBoard {
                 _current = Player.WHITE;
 
                 break;
+
+            //Game with Grace that white was bearing off black just outside home where
+            //  bearing off jacked up the pieces
+            case 11:
+
+                for(int j=0 ; j<6 ; j++){
+                    _board[j] = (j % 2 == 0) ? 2 : 3;
+                }
+
+                for(int j=_board.length-8 ; j<_board.length ; j++){
+                    _board[j] = (j % 2 == 0) ? -2 : -1;
+                }
+
+                _current = Player.WHITE;
+
+                break;
 		}
 	}
 	
@@ -706,6 +722,10 @@ public class gameBoard {
                 _board[iSrc]++;
             }
             else if(_board[iSrc] > 0) {
+
+                if(bTest)
+                    return MoveMsg.VALID_TEST;
+
                 _bearwhite++;
                 _board[iSrc]--;
             }

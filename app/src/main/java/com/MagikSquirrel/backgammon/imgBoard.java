@@ -258,8 +258,19 @@ public class imgBoard {
     public void setSpinnerChoice( int iChoice ) {
 
         ArrayAdapter aChoices = (ArrayAdapter) _sSrcPoint.getAdapter();
-        int iPosition = aChoices.getPosition(Integer.toString(iChoice));
-        _sSrcPoint.setSelection(iPosition);
+        try {
+            int iPosition = aChoices.getPosition(Integer.toString(iChoice));
+            _sSrcPoint.setSelection(iPosition);
+        }
+        //Spinner has no choices which means the array adapter was never initilized.
+        catch (NullPointerException e) {
+            updateSpinnerChoices();
+            aChoices.getPosition(Integer.toString(iChoice));
+            int iPosition = aChoices.getPosition(Integer.toString(iChoice));
+            _sSrcPoint.setSelection(iPosition);
+
+            //If we get an exception here then something is really wrong!
+        }
     }
 
 	//Updates the Current Player Text

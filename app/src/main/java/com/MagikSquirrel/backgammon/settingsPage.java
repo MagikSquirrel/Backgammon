@@ -7,6 +7,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ToggleButton;
@@ -63,6 +65,22 @@ public class settingsPage extends backgammonActionBarActivity {
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 ((backgammonApp) getApplication()).setShowHints(isChecked);
+            }
+        });
+
+        //DEBUG BUTTON
+        final Button btnDebug = (Button) findViewById(R.id.bDebug);
+        btnDebug.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                EditText etDebug = (EditText)findViewById(R.id.etDebug);
+                try {
+                    ((backgammonApp) getApplication()).setTestCase(Integer.parseInt(etDebug.getText().toString()));
+                }
+                catch (Exception e) {
+                    ((backgammonApp) getApplication()).setTestCase(0);
+                }
             }
         });
     }

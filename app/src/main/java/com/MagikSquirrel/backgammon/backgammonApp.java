@@ -15,6 +15,7 @@ public class backgammonApp extends Application {
     private String _sBlackName;
     private String _sWhiteName;
     private boolean showHints;
+    private int testCase;
 
     public backgammonApp() {
         this._lActivities = new HashMap<String, Activity>();
@@ -147,5 +148,13 @@ public class backgammonApp extends Application {
 
     public void setShowHints(boolean showHints) {
         this.showHints = showHints;
+    }
+
+    public int getTestCase() {
+        return testCase;
+    }
+
+    public void setTestCase(int testCase) {
+        this.testCase = testCase;
     }
 }
