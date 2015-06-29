@@ -280,6 +280,12 @@ public class imgBoard {
         else if(_gBoard.getCurrentPlayer() == gameBoard.Player.WHITE)
             _tvPlayer.setText("Player: (R)"+getWhiteName());
 	}
+    public void showCurrentPlayer(gameBoard.Player player){
+        if(player == gameBoard.Player.BLACK)
+            _tvPlayer.setText("Player: (B)"+getBlackName());
+        else if(player == gameBoard.Player.WHITE)
+            _tvPlayer.setText("Player: (R)"+getWhiteName());
+    }
 
 	//Updates the Jail Count Text
 	public void showJailCount (){

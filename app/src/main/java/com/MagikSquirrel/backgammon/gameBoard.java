@@ -114,12 +114,22 @@ public class gameBoard {
         return getDie2(false);
     }
 
-    public boolean rollDice() {
+    //Roll the dice method, keeps the values within the allowable range.
+    private void rollRandomDice(boolean rollDie1, boolean rollDie2) {
         Random r = new Random();
 
         //Get random in range of their default min/max vals
-        _die1 = r.nextInt(DICE_MAX - DICE_MIN + 1) + DICE_MIN;
-        _die2 = r.nextInt(DICE_MAX - DICE_MIN + 1) + DICE_MIN;
+        if(rollDie1)
+            _die1 = r.nextInt(DICE_MAX - DICE_MIN + 1) + DICE_MIN;
+
+        if(rollDie2)
+            _die2 = r.nextInt(DICE_MAX - DICE_MIN + 1) + DICE_MIN;
+
+    }
+    //Roll the dice for a normal move.
+    public boolean rollDice() {
+
+        rollRandomDice(true, true);
 		
 		//Doubles? If so set both to negative
 		if(_die1 == _die2) {
@@ -170,6 +180,31 @@ public class gameBoard {
         return true;
     }
 
+    //Allows for rolling to see who goes first?
+    public Player rollForFirst() {
+
+        if(_die1 == 0)
+            rollRandomDice(true, false);
+
+        else if(_die2 == 0)
+            rollRandomDice(false, true);
+
+        //Nobody wins, roll again
+        else if(_die1 == _die2) {
+            _die1 = 0;
+            _die2 = 0;
+        }
+
+        else if(_die1 > _die2)
+            _current = Player.BLACK;
+
+        else if(_die2 > _die1)
+            _current = Player.WHITE;
+
+        //Return the current player
+        return _current;
+
+    }
 
     //This fills the gameboard with pieces (not a real state)
     //This is used for testing piece graphics
@@ -191,6 +226,13 @@ public class gameBoard {
 		//Clear the jails
 		_outblack = 0;
 		_outwhite = 0;
+
+        //Clear Bearing off
+        _bearblack = 0;
+        _bearwhite = 0;
+
+        _die1 = 0;
+        _die2 = 0;
     }
 
     //Setup New game by placing pieces where they should
@@ -219,6 +261,9 @@ public class gameBoard {
         //white home
         _board[18] = -5;
         _board[23] = 2;
+
+        //Set player to NULL (to force rolling)
+        _current = Player.NULL;
     }
 	
 	//This method is for setting up very specific game scenarios for testing
