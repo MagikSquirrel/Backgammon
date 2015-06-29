@@ -12,16 +12,10 @@ import java.util.Random;
 public class backgammonApp extends Application {
 
     private Map<String, Activity> _lActivities;
-    private String _sBlackName;
-    private String _sWhiteName;
-    private boolean showHints;
+    private String _sBlackName = "Black";
+    private String _sWhiteName = "Red";
+    private boolean showHints = true;
     private int testCase;
-
-    public backgammonApp() {
-        this._lActivities = new HashMap<String, Activity>();
-        _sBlackName = "Black";
-        _sWhiteName = "Red";
-    }
 
     public void addActivity(String name, Activity activity) {
         if(!this._lActivities.containsKey(activity)) {

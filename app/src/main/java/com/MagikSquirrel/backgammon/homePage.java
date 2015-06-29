@@ -68,8 +68,8 @@ public class homePage extends backgammonActionBarActivity {
         final NumberPicker npDie1 = (NumberPicker) findViewById(R.id.npDie1);
         final NumberPicker npDie2 = (NumberPicker) findViewById(R.id.npDie2);
 
-        npDie1.setMinValue(1); npDie1.setMaxValue(6);
-        npDie2.setMinValue(1); npDie2.setMaxValue(6);
+        npDie1.setMinValue(0); npDie1.setMaxValue(6); npDie1.setEnabled(false);
+        npDie2.setMinValue(0); npDie2.setMaxValue(6); npDie2.setEnabled(false);
 
         //NEW GAME BUTTON
         Button btnCreate = (Button) findViewById(R.id.bNewGame);
@@ -276,44 +276,100 @@ public class homePage extends backgammonActionBarActivity {
             @Override
             public void onClick(View view) {
 
-            //Roll and lets see if we have a move.
-            if(!gameBoard.rollDice()) {
-                Toast.makeText(mContext, gameBoard.getCurrentPlayer().toString()+" can't move with this roll.", Toast.LENGTH_SHORT).show();
+                //Are we rolling for real or starting a new game?
+                if (gameBoard.isBoardLegal()) {
 
-                //Swap players
-                gameBoard.swapCurrentPlayer();
+                    //Roll and lets see if we have a move.
+                    if (!gameBoard.rollDice()) {
+                        Toast.makeText(mContext, gameBoard.getCurrentPlayer().toString() + " can't move with this roll.", Toast.LENGTH_SHORT).show();
 
-                //Update Spinner
-                imgBoard.updateSpinnerChoices();
+                        //Swap players
+                        gameBoard.swapCurrentPlayer();
 
-                //Redraw the board.
-                imgBoard.showCurrentPlayer();
+                        //Update Spinner
+                        imgBoard.updateSpinnerChoices();
 
-                //Enable Roll
-                btnRoll.setEnabled(true);
+                        //Redraw the board.
+                        imgBoard.showCurrentPlayer();
 
-                //Disable Move
-                btnMove.setEnabled(false);
-            }
+                        //Enable Roll
+                        btnRoll.setEnabled(true);
 
-            //Regular movable
-            else {
-                //Disable Roll
-                btnRoll.setEnabled(false);
+                        //Disable Move
+                        btnMove.setEnabled(false);
+                    }
 
-                //Enable Move
-                btnMove.setEnabled(true);
-            }
+                    //Regular movable
+                    else {
+                        //Disable Roll
+                        btnRoll.setEnabled(false);
 
-            //Doubles!
-            if(gameBoard.getDie1() == gameBoard.getDie2()) {
-                Toast.makeText(mContext, gameBoard.getCurrentPlayer().toString() + " rolled doubles!", Toast.LENGTH_SHORT).show();
-            }
+                        //Enable Move
+                        btnMove.setEnabled(true);
+                    }
 
-            //Set the Number Pickers to those
-            npDie1.setValue(Math.abs(gameBoard.getDie1()));
-            npDie2.setValue(Math.abs(gameBoard.getDie2()));
+                    //Doubles!
+                    if (gameBoard.getDie1() == gameBoard.getDie2()) {
+                        Toast.makeText(mContext, gameBoard.getCurrentPlayer().toString() + " rolled doubles!", Toast.LENGTH_SHORT).show();
+                    }
 
+                    //Set the Number Pickers to those
+                    npDie1.setValue(Math.abs(gameBoard.getDie1()));
+                    npDie2.setValue(Math.abs(gameBoard.getDie2()));
+
+                }
+
+                //No, this is a starting game we're rolling to see who goes first.
+                else if(gameBoard.rollForFirst() == com.MagikSquirrel.backgammon.gameBoard.Player.NULL){
+
+                    int iDie1 = gameBoard.getDie1(false);
+                    int iDie2 = gameBoard.getDie2(false);
+
+                    if(iDie1 == 0) {
+
+                    }
+
+                    else if (iDie2 == 0) {
+                        Toast.makeText(mContext, app.getBlackName() + " rolled a " + Integer.toString(iDie1),
+                                Toast.LENGTH_SHORT).show();
+
+                        imgBoard.showCurrentPlayer(com.MagikSquirrel.backgammon.gameBoard.Player.WHITE);
+                        npDie1.setValue(iDie1);
+                    }
+                    else {
+                        Toast.makeText(mContext, app.getWhiteName() + " rolled a " + Integer.toString(iDie2),
+                                Toast.LENGTH_SHORT).show();
+                        npDie2.setValue(iDie2);
+
+                        btnRoll.performClick();
+
+                        //Are they the same, we have to start over...
+                        if(iDie1 == iDie2) {
+
+                            Toast.makeText(mContext, "Reroll to see who goes first!",
+                                    Toast.LENGTH_SHORT).show();
+
+                            //Set the Player to Black (text only)
+                            imgBoard.showCurrentPlayer(com.MagikSquirrel.backgammon.gameBoard.Player.BLACK);
+                            homePage.this.setUIObjects(false, true, 0, true, null);
+                        }
+                    }
+
+                }
+                else {
+                    imgBoard.showCurrentPlayer();
+
+                    Toast.makeText(mContext, gameBoard.getCurrentPlayer().toString() + " goes first.",
+                            Toast.LENGTH_SHORT).show();
+
+                    npDie1.setMinValue(1);
+                    npDie2.setMinValue(1);
+
+                    btnMove.setEnabled(true);
+                    btnRoll.setEnabled(false);
+
+                    imgBoard.updateSpinnerChoices();
+                }
             }
         });
 
@@ -341,22 +397,46 @@ public class homePage extends backgammonActionBarActivity {
 
     }
 
-    //Clears the board for a new game.
-    private void clearGame() {
-        gameBoard.setBoardEmpty();
-        imgBoard.redrawBoard();
+    //Set the buttons and pickers. Here we can enable/disable the Move/roll buttons
+    //Set the mix number picker values, set to that, and even disable the cheating of them.
+    public void setUIObjects(Boolean setMove, Boolean setRoll, Integer pickMin, Boolean setToPickMin, Boolean setCheatingPicker) {
+        final NumberPicker npDie1 = (NumberPicker) findViewById(R.id.npDie1);
+        final NumberPicker npDie2 = (NumberPicker) findViewById(R.id.npDie2);
+        final Button btnRoll = (Button) findViewById(R.id.bRoll);
+        final Button btnMove = (Button) findViewById(R.id.bMove);
 
-        Button bMove = (Button) findViewById(R.id.bMove);
-        bMove.setEnabled(false);
+        if(setMove != null)
+            btnMove.setEnabled(setMove);
+        if(setRoll != null)
+            btnRoll.setEnabled(setRoll);
+        if(pickMin != null) {
+            npDie1.setMinValue(pickMin);
+            npDie2.setMinValue(pickMin);
+            if(setToPickMin != null) {
+                npDie1.setValue(pickMin);
+                npDie2.setValue(pickMin);
+            }
+        }
+        if(setCheatingPicker != null) {
+            npDie1.setEnabled(setCheatingPicker);
+            npDie2.setEnabled(setCheatingPicker);
+        }
     }
 
+    //Clears the board for a new game.
+    private void clearGame() {
+
+        setUIObjects(false, false, 0, true, null);
+        gameBoard.setBoardEmpty();
+        imgBoard.redrawBoard();
+    }
 
     //Sets up the board and pieces as necessary then configures the buttons and die.
     private void newGame() {
-        final NumberPicker npDie1 = (NumberPicker) findViewById(R.id.npDie1);
-        final NumberPicker npDie2 = (NumberPicker) findViewById(R.id.npDie2);
 
-        gameBoard.setBoardNew(com.MagikSquirrel.backgammon.gameBoard.Player.BLACK);
+        setUIObjects(false, true, 0, true, null);
+
+        gameBoard.setBoardNew();
         imgBoard.redrawBoard();
 
         //Give black a go
@@ -369,13 +449,8 @@ public class homePage extends backgammonActionBarActivity {
         cbDie1.setEnabled(true);
         cbDie2.setEnabled(true);
 
-        //Disable number picker
-        npDie1.setEnabled(false);
-        npDie2.setEnabled(false);
-
-        //Enable Roll
-        Button btnRoll = (Button) findViewById(R.id.bRoll);
-        btnRoll.setEnabled(true);
+        //Set the Player to Black (text only)
+        imgBoard.showCurrentPlayer(com.MagikSquirrel.backgammon.gameBoard.Player.BLACK);
     }
 
 }
